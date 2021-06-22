@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import service.UserService;
 
 @Controller
-@RequestMapping("/hancall/user")
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;

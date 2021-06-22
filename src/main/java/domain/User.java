@@ -1,12 +1,21 @@
 package domain;
 
 public class User {
-    String id;
-    String email;
-    String pw;
-    String name;
-    int phone_num;
-    String join_date;
+    private String id;
+    private String email;
+    private String pw;
+    private String name;
+    private String nickName;
+    private String phone_num;
+    private String join_date;
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
 
     public String getId() {
         return id;
@@ -40,11 +49,11 @@ public class User {
         this.name = name;
     }
 
-    public int getPhone_num() {
+    public String getPhone_num() {
         return phone_num;
     }
 
-    public void setPhone_num(int phone_num) {
+    public void setPhone_num(String phone_num) {
         this.phone_num = phone_num;
     }
 
