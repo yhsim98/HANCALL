@@ -8,7 +8,7 @@ public class Board {
     private String createdDate;
     private String title;
     private String content;
-    private String nickName;
+    private String writerNickname;
 
     public Long getBoardNum() {
         return boardNum;
@@ -66,11 +66,11 @@ public class Board {
         this.content = content;
     }
 
-    public String getNickName() {
-        return nickName;
+    public String getWriterNickname() {
+        return writerNickname;
     }
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setWriterNickname(String writerNickname) {
+        this.writerNickname = writerNickname;
     }
 }

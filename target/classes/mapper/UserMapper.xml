@@ -13,7 +13,5 @@
     <select id="getUserById" parameterType="Long" resultType="domain.User">
         SELECT * FROM user WHERE id=#{id}
     </select>
-    <insert id="insertUser" parameterType="domain.User">
-        INSERT INTO user (email, password) values(#{email}, #{password})
-    </insert>
+
 </mapper>

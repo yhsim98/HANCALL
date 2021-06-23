@@ -1,37 +1,50 @@
 package controller;
 
+import domain.Board;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+import service.BoardService;
 
 @Controller
-@RequestMapping("/post")
+@RequestMapping("/board")
 public class BoardController {
 
+    private final BoardService boardService;
 
+    @Autowired
+    public BoardController(BoardService boardService){
+        this.boardService = boardService;
+    }
 
+    @ResponseBody
     @RequestMapping(value="", method = RequestMethod.POST)
-    public ResponseEntity createPost(){
+    public ResponseEntity createPost(
+            @RequestBody Board board){
 
-        return new ResponseEntity("", HttpStatus.CREATED);
+        boardService.createBoard(board);
+
+        return new ResponseEntity("created", HttpStatus.CREATED);
     }
 
+    @ResponseBody
     @RequestMapping(value="", method = RequestMethod.GET)
-    public ResponseEntity getPostsList(){
-
+    public ResponseEntity<Board> getPostsList(){
+        return null;
     }
 
-    @RequestMapping(value="/{num}", method = RequestMethod.GET)
-    public ResponseEntity getPost(@PathVariable("num") String boardNum){
-
+    @ResponseBody
+    @RequestMapping(value="/{boardNum}", method = RequestMethod.GET)
+    public ResponseEntity getPost(@PathVariable("boardNum") String boardNum){
+        return null;
     }
 
-    @RequestMapping(value="/{num}", method = RequestMethod.DELETE)
-    public ResponseEntity deletePost(@PathVariable("num") String boardNum){
-
+    @ResponseBody
+    @RequestMapping(value="/{boardNum}", method = RequestMethod.DELETE)
+    public ResponseEntity deletePost(@PathVariable("boardNum") String boardNum){
+        return null;
     }
 
 }
