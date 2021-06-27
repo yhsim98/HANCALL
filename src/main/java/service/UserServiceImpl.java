@@ -1,5 +1,6 @@
 package service;
 
+import domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.UserMapper;
@@ -12,6 +13,17 @@ public class UserServiceImpl implements UserService{
     @Autowired
     public UserServiceImpl(UserMapper userMapper){
         this.userMapper = userMapper;
+    }
+
+    @Override
+    public void userRegister(User user) {
+        userMapper.insertUser(user);
+    }
+
+    @Override
+    public User getUserById(String token) {
+        Long id = 1L;
+        return userMapper.getUserById(id);
     }
 
     @Override
