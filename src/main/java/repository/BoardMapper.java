@@ -14,4 +14,5 @@ public interface BoardMapper {
     Board getBoardListByDestination(Board board);
     Board getBoardListByStartingPoint(Board board);
     Board getBoardListBySPAndDes(Board board);
+    void deleteBoard(Long boardId);
 }

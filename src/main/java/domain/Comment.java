@@ -1,35 +1,36 @@
 package domain;
 
 public class Comment {
-    private Long commentNum;
-    private Long boardNum;
-    private Long writerId;
+    private Long comment_Id;
+    private Long board_Id;
+    private Long writer_Id;
     private String content;
-    private String createdDate;
-    private String writerNickname;
+    private String created_Date;
+    private String update_Date;
+    private String nickname;
 
-    public Long getCommentNum() {
-        return commentNum;
+    public Long getComment_Id() {
+        return comment_Id;
     }
 
-    public void setCommentNum(Long commentNum) {
-        this.commentNum = commentNum;
+    public void setComment_Id(Long comment_Id) {
+        this.comment_Id = comment_Id;
     }
 
-    public Long getBoardNum() {
-        return boardNum;
+    public Long getBoard_Id() {
+        return board_Id;
     }
 
-    public void setBoardNum(Long boardNum) {
-        this.boardNum = boardNum;
+    public void setBoard_Id(Long board_Id) {
+        this.board_Id = board_Id;
     }
 
-    public Long getWriterId() {
-        return writerId;
+    public Long getWriter_Id() {
+        return writer_Id;
     }
 
-    public void setWriterId(Long writerId) {
-        this.writerId = writerId;
+    public void setWriter_Id(Long writer_Id) {
+        this.writer_Id = writer_Id;
     }
 
     public String getContent() {
@@ -40,19 +41,19 @@ public class Comment {
         this.content = content;
     }
 
-    public String getCreatedDate() {
-        return createdDate;
+    public String getCreated_Date() {
+        return created_Date;
     }
 
-    public void setCreatedDate(String createdDate) {
-        this.createdDate = createdDate;
+    public void setCreated_Date(String created_Date) {
+        this.created_Date = created_Date;
     }
 
-    public String getWriterNickname() {
-        return writerNickname;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void setWriterNickname(String writerNickname) {
-        this.writerNickname = writerNickname;
+    public void setNickname(String writerNickname) {
+        this.nickname = writerNickname;
     }
 }

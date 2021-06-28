@@ -7,51 +7,59 @@
 
     <insert parameterType="domain.Board" id="insertBoard">
         INSERT INTO board(writer_id, starting_point, destination, title, content, created_date, update_date)
-            VALUES(#{writerId}, #{startingPoint}, #{destination}, #{title}, #{content}, DEFAULT, DEFAULT)
+            VALUES(#{writer_Id}, #{starting_Point}, #{destination}, #{title}, #{content}, DEFAULT, DEFAULT)
+        <selectKey keyProperty="board_Id" resultType="Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
     </insert>
 
     <select id="getBoardList" resultType="domain.Board">
-        SELECT starting_point, destination, title, update_date, user.nickname
+        SELECT board_id, starting_point, destination, title, update_date, user.nickname
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
     </select>
 
     <select id="getBoardById" resultType="domain.Board" parameterType="Long">
-        SELECT starting_point, destination, created_date, update_date, title, content, user.nickname
+        SELECT board_id, writer_id, starting_point, destination, created_date, update_date, title, content, user.nickname
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
-        WHERE id=#{boardId}
+        WHERE board_id=#{boardId}
     </select>
 
     <select id="getBoardListByDestination" parameterType="domain.Board" resultType="domain.Board">
-        SELECT starting_point, destination, created_date, update_date, title, content, user.nickname
+        SELECT board_id, starting_point, destination, created_date, update_date, title, content, user.nickname
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
         WHERE destination=#{destination}
     </select>
 
     <select id="getBoardListByStartingPoint" parameterType="domain.Board" resultType="domain.Board">
-        SELECT starting_point, destination, created_date, update_date, title, content, user.nickname
+        SELECT board_id, starting_point, destination, created_date, update_date, title, content, user.nickname
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
-        WHERE starting_point=#{startingPoint}
+        WHERE starting_point=#{starting_Point}
     </select>
 
     <select id="getBoardListBySPAndDes" parameterType="domain.Board"  resultType="domain.Board">
-        SELECT starting_point, destination, created_date, update_date, title, content, user.nickname
+        SELECT board_id, starting_point, destination, created_date, update_date, title, content, user.nickname
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
-        WHERE starting_point=#{startingPoint} AND destination=#{destination}
+        WHERE starting_point=#{starting_Point} AND destination=#{destination}
     </select>
 
 
     <update id="updateBoard" parameterType="domain.Board" >
-        UPDATE user(starting_point, destination, title, content, update_date)
-        VALUES(#{startingPoint}, #{destination}, #{title}, #{content}, DEFAULT)
-        WHERE board_id=#{boardId}
+        UPDATE board
+        SET
+            starting_point=#{starting_Point},
+            destination=#{destination},
+            title=#{title},
+            content=#{content},
+            update_date=DEFAULT
+        WHERE board_id=#{board_Id}
     </update>
 
     <delete id="deleteBoard" parameterType="Long">
-        DELETE board where board_id=#{boardId}
+        DELETE FROM board where board_id=#{boardId}
     </delete>
 </mapper>

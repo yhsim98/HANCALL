@@ -1,12 +1,12 @@
 package domain;
 
 public class User {
-    private String id;
+    private Long id;
     private String email;
-    private String pw;
+    private String password;
     private String name;
     private String nickName;
-    private String phone_num;
+    private String phone;
     private String join_date;
 
     public String getNickName() {
@@ -17,11 +17,11 @@ public class User {
         this.nickName = nickName;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -33,12 +33,12 @@ public class User {
         this.email = email;
     }
 
-    public String getPw() {
-        return pw;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPw(String pw) {
-        this.pw = pw;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {
@@ -49,12 +49,12 @@ public class User {
         this.name = name;
     }
 
-    public String getPhone_num() {
-        return phone_num;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhone_num(String phone_num) {
-        this.phone_num = phone_num;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getJoin_date() {
