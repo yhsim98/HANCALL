@@ -11,6 +11,6 @@
     <title>$Title$</title>
   </head>
   <body>
-  $END$
+  <a href="boardList_Json.html">게시판 이동</a>
   </body>
 </html>

@@ -2,7 +2,7 @@ package domain;
 
 public class Board {
     private Long board_Id;
-    private String writer_Id;
+    private Long writer_Id;
     private String starting_Point;
     private String destination;
     private String created_Date;
@@ -27,11 +27,11 @@ public class Board {
         this.board_Id = board_Id;
     }
 
-    public String getWriter_Id() {
+    public Long getWriter_Id() {
         return writer_Id;
     }
 
-    public void setWriter_Id(String writer_Id) {
+    public void setWriter_Id(Long writer_Id) {
         this.writer_Id = writer_Id;
     }
 
