@@ -74,7 +74,7 @@ public class UserController {
     //회원 탈퇴
     @Auth
     @ResponseBody
-    @RequestMapping(value = "/my", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/my", method = RequestMethod.POST)
     public ResponseEntity secession(@RequestHeader(value="Authorization") String token) throws Exception{
         userService.deleteUser(token);
         return new ResponseEntity(HttpStatus.NO_CONTENT);

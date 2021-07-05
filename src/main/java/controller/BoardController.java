@@ -33,26 +33,16 @@ public class BoardController {
     @Auth
     @ResponseBody
     @RequestMapping(value="", method = RequestMethod.POST)
-    public ResponseEntity<Map> createBoard(@RequestBody Board board,
-                                           @RequestHeader String token) throws Exception{
+    public ResponseEntity<Map> createBoard(@RequestBody Board board) throws Exception{
 
-        Board created = boardService.createBoard(board, token);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{board_Id}")
-                .buildAndExpand(created.getBoard_Id())
-                .toUri();
-
-        HttpHeaders responseHeader = new HttpHeaders();
-        responseHeader.setLocation(location);
+        Board created = boardService.createBoard(board);
 
         Map result = new HashMap();
 
         result.put("data", created);
         result.put("result", Boolean.TRUE);
 
-        return new ResponseEntity(result, responseHeader, HttpStatus.CREATED);
+        return new ResponseEntity(result, HttpStatus.CREATED);
     }
 
 
@@ -104,9 +94,9 @@ public class BoardController {
     @RequestMapping(value="/{boardId}", method=RequestMethod.PUT)
     public ResponseEntity updateBoard(
             @PathVariable("boardId") Long boardId,
-            @RequestBody Board board,
-            @RequestHeader("Authorization") String token) throws Exception {
-        boardService.updateBoard(board, boardId, token);
+            @RequestBody Board board) throws Exception {
+
+        boardService.updateBoard(board, boardId);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
@@ -114,10 +104,9 @@ public class BoardController {
     //게시글 삭제
     @Auth
     @ResponseBody
-    @RequestMapping(value="/{boardId}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteBoard(@PathVariable("boardId") Long boardId,
-                                      @RequestHeader("Authorization") String token) throws Exception {
-        boardService.deleteBoard(boardId, token);
+    @RequestMapping(value="/{boardId}", method = RequestMethod.POST)
+    public ResponseEntity deleteBoard(@PathVariable("boardId") Long boardId) throws Exception {
+        boardService.deleteBoard(boardId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

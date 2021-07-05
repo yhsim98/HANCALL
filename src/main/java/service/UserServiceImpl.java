@@ -4,6 +4,7 @@ import domain.User;
 import exception.ConflictException;
 import exception.NotFoundException;
 import exception.UnauthorizedException;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.UserMapper;
@@ -29,6 +30,8 @@ public class UserServiceImpl implements UserService{
             throw new ConflictException("이미 사용하고 있는 이메일입니다");
         }
 
+        user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(10)));
+
         userMapper.insertUser(user);
         return userMapper.getUserById(user.getId());
     }
@@ -52,7 +55,7 @@ public class UserServiceImpl implements UserService{
             throw new NotFoundException("존재하지 않는 계정입니다");
         }
 
-        if(selectUser.getPassword() != user.getPassword()){
+        if(!BCrypt.checkpw(user.getPassword(), selectUser.getPassword())){
             throw new UnauthorizedException("비밀번호가 틀립니다");
         }
 

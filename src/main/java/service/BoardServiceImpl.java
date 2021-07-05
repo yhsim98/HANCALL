@@ -1,14 +1,17 @@
 package service;
 
-import annotation.Auth;
+
 import domain.Board;
 import exception.NotFoundException;
 import exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import repository.BoardMapper;
 import util.JwtUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -26,9 +29,13 @@ public class BoardServiceImpl implements BoardService{
 
 
     @Override
-    public Board createBoard(Board board, String token) {
+    public Board createBoard(Board board) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader("Authorization");
+
         board.setWriter_Id(jwtUtil.getUserIdFromJWT(token));
         boardMapper.insertBoard(board);
+
         return boardMapper.getBoardById(board.getBoard_Id());
     }
 
@@ -36,6 +43,7 @@ public class BoardServiceImpl implements BoardService{
     public List<Board> getBoardList() {
         return boardMapper.getBoardList();
     }
+
 
     @Override
     public Board getBoard(Long boardId) throws Exception{
@@ -48,14 +56,16 @@ public class BoardServiceImpl implements BoardService{
 
 
     @Override
-    public void updateBoard(Board board, Long boardId, String token) throws Exception{
+    public void updateBoard(Board board, Long boardId) throws Exception{
         Board selectBoard = boardMapper.getBoardById(boardId);
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader("Authorization");
 
         if(selectBoard == null){
             throw new NotFoundException("존재하지 않는 게시판입니다");
         }
 
-        if(jwtUtil.getUserIdFromJWT(token) != selectBoard.getBoard_Id()){
+        if(!jwtUtil.getUserIdFromJWT(token).equals(selectBoard.getBoard_Id())){
             throw new UnauthorizedException("권한이 없습니다");
         }
 
@@ -78,14 +88,16 @@ public class BoardServiceImpl implements BoardService{
 
 
     @Override
-    public void deleteBoard(Long boardId, String token) throws Exception{
+    public void deleteBoard(Long boardId) throws Exception{
         Board selectBoard = boardMapper.getBoardById(boardId);
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader("Authorization");
 
         if(selectBoard == null){
             throw new NotFoundException("존재하지 않는 게시물입니다");
         }
 
-        if(jwtUtil.getUserIdFromJWT(token) != selectBoard.getBoard_Id()){
+        if(!jwtUtil.getUserIdFromJWT(token).equals(selectBoard.getBoard_Id())){
             throw new UnauthorizedException("권한이 없습니다");
         }
         boardMapper.deleteBoard(boardId);
