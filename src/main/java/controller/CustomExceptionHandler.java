@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class ExceptionController {
+public class CustomExceptionHandler {
 
     @ExceptionHandler({ConflictException.class})
     public ResponseEntity handleException(final ConflictException e){

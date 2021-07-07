@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="repository.ParticipantMapper">
+    <select id="getParticipantsList" parameterType="Long" resultType="domain.Participant">
+        SELECT board_id, user_id, user.nickname
+        FROM participant
+            LEFT JOIN user ON participant.user_id=user.id
+        WHERE board_id=#{boardId}
+    </select>
+
+    <select id="getParticipant" parameterType="domain.Participant" resultType="domain.Participant">
+        SELECT * FROM participant WHERE board_id=#{board_Id} AND user_id=#{user_Id}
+    </select>
+
+    <insert id="insertParticipant" parameterType="domain.Participant">
+        INSERT INTO participant(board_id, user_id) VALUES(#{board_Id}, #{user_Id})
+    </insert>
+
+    <delete id="deleteParticipant" parameterType="domain.Participant">
+        DELETE FROM participant WHERE board_id=#{board_Id} AND user_id=#{user_Id}
+    </delete>
+
+    <delete id="deleteAllParticipantInBoard" parameterType="Long">
+        DELETE FROM participant WHERE board_id=#{boardId}
+    </delete>
+</mapper>

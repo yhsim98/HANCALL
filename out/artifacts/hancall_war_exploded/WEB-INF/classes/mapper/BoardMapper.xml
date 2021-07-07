@@ -26,27 +26,19 @@
         WHERE board_id=#{boardId}
     </select>
 
-    <select id="getBoardListByDestination" parameterType="domain.Board" resultType="domain.Board">
+    <select id="searchBoard" parameterType="domain.Board" resultType="domain.Board">
         SELECT board_id, starting_point, destination, created_date, update_date, title, content, user.nickname
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
-        WHERE destination=#{destination}
+        <where>
+            <if test="destination != ''">
+                destination=#{destination}
+            </if>
+            <if test="starting_Point != ''">
+                AND starting_point=#{starting_Point}
+            </if>
+        </where>
     </select>
-
-    <select id="getBoardListByStartingPoint" parameterType="domain.Board" resultType="domain.Board">
-        SELECT board_id, starting_point, destination, created_date, update_date, title, content, user.nickname
-        FROM board
-        LEFT JOIN user ON board.writer_id=user.id
-        WHERE starting_point=#{starting_Point}
-    </select>
-
-    <select id="getBoardListBySPAndDes" parameterType="domain.Board"  resultType="domain.Board">
-        SELECT board_id, starting_point, destination, created_date, update_date, title, content, user.nickname
-        FROM board
-        LEFT JOIN user ON board.writer_id=user.id
-        WHERE starting_point=#{starting_Point} AND destination=#{destination}
-    </select>
-
 
     <update id="updateBoard" parameterType="domain.Board" >
         UPDATE board

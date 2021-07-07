@@ -5,7 +5,6 @@ public class Comment {
     private Long board_Id;
     private Long writer_Id;
     private String content;
-    private String created_Date;
     private String update_Date;
     private String nickname;
 
@@ -41,12 +40,12 @@ public class Comment {
         this.content = content;
     }
 
-    public String getCreated_Date() {
-        return created_Date;
+    public String getUpdate_Date() {
+        return update_Date;
     }
 
-    public void setCreated_Date(String created_Date) {
-        this.created_Date = created_Date;
+    public void setUpdate_Date(String update_Date) {
+        this.update_Date = update_Date;
     }
 
     public String getNickname() {

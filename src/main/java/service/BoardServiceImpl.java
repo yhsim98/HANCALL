@@ -2,6 +2,7 @@ package service;
 
 
 import domain.Board;
+import domain.Participant;
 import exception.NotFoundException;
 import exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,19 +20,21 @@ import java.util.List;
 public class BoardServiceImpl implements BoardService{
 
     private final BoardMapper boardMapper;
+    private final CommentService commentService;
+    private final ParticipantService participantService;
     private final JwtUtil jwtUtil;
 
     @Autowired
-    public BoardServiceImpl(BoardMapper boardMapper, JwtUtil jwtUtil){
-        this.jwtUtil = jwtUtil;
+    public BoardServiceImpl(BoardMapper boardMapper, CommentService commentService, ParticipantService participantService, JwtUtil jwtUtil) {
         this.boardMapper = boardMapper;
+        this.commentService = commentService;
+        this.participantService = participantService;
+        this.jwtUtil = jwtUtil;
     }
-
 
     @Override
     public Board createBoard(Board board) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String token = request.getHeader("Authorization");
+        String token = getTokenFromServlet();
 
         board.setWriter_Id(jwtUtil.getUserIdFromJWT(token));
         boardMapper.insertBoard(board);
@@ -47,9 +50,11 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public Board getBoard(Long boardId) throws Exception{
-        Board select = boardMapper.getBoardById(boardId);
+        Board selectBoard = boardMapper.getBoardById(boardId);
 
-        if(select == null) throw new NotFoundException("존재하지 않는 게시판입니다");
+        if("".equals(selectBoard) || selectBoard == null){
+            throw new NotFoundException("존재하지 않는 게시물입니다");
+        }
 
         return boardMapper.getBoardById(boardId);
     }
@@ -58,14 +63,13 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public void updateBoard(Board board, Long boardId) throws Exception{
         Board selectBoard = boardMapper.getBoardById(boardId);
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String token = request.getHeader("Authorization");
+        String token = getTokenFromServlet();
 
-        if(selectBoard == null){
-            throw new NotFoundException("존재하지 않는 게시판입니다");
+        if("".equals(selectBoard) || selectBoard == null){
+            throw new NotFoundException("존재하지 않는 게시물입니다");
         }
 
-        if(!jwtUtil.getUserIdFromJWT(token).equals(selectBoard.getBoard_Id())){
+        if(!jwtUtil.getUserIdFromJWT(token).equals(selectBoard.getWriter_Id())){
             throw new UnauthorizedException("권한이 없습니다");
         }
 
@@ -74,32 +78,35 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public List<Board> searchBoard(Board board) {
-        if(board.getDestination() == null){
-            return boardMapper.getBoardListByStartingPoint(board);
-        }
-        else if(board.getStarting_Point() == null){
-            return boardMapper.getBoardListByDestination(board);
-        }
-        else{
-            return boardMapper.getBoardListBySPAndDes(board);
-        }
-    }
+    public List<Board> searchBoard(String startingPoint, String destination) {
+        Board board = new Board();
 
+        board.setStarting_Point(startingPoint);
+        board.setDestination(destination);
+
+        return boardMapper.searchBoard(board);
+    }
 
     @Override
     public void deleteBoard(Long boardId) throws Exception{
         Board selectBoard = boardMapper.getBoardById(boardId);
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String token = request.getHeader("Authorization");
+        String token = getTokenFromServlet();
 
-        if(selectBoard == null){
+        if("".equals(selectBoard) || selectBoard == null){
             throw new NotFoundException("존재하지 않는 게시물입니다");
         }
 
-        if(!jwtUtil.getUserIdFromJWT(token).equals(selectBoard.getBoard_Id())){
+        if(!jwtUtil.getUserIdFromJWT(token).equals(selectBoard.getWriter_Id())){
             throw new UnauthorizedException("권한이 없습니다");
         }
+
+        participantService.deleteAllParticipantInBoard(boardId);
+        commentService.deleteBoardComments(boardId);
         boardMapper.deleteBoard(boardId);
+    }
+
+    private String getTokenFromServlet(){
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        return request.getHeader("Authorization");
     }
 }

@@ -5,16 +5,16 @@ public class User {
     private String email;
     private String password;
     private String name;
-    private String nickName;
+    private String nickname;
     private String phone;
     private String join_date;
 
-    public String getNickName() {
-        return nickName;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public Long getId() {

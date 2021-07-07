@@ -10,4 +10,6 @@ public interface UserMapper {
     User getUserById(Long id);
     void deleteUser(Long id);
     void updateUser(User user);
+    int isDeleted(Long id);
+    User getUserByNickname(String nickname);
 }

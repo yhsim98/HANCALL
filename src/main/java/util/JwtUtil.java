@@ -37,10 +37,10 @@ public class JwtUtil {
  
     public boolean isValid(String token) throws Exception{
         if ( token == null) {
-            throw new Exception("토큰값이 존재하지 않습니다");
+            throw new UnauthorizedException("토큰값이 존재하지 않습니다");
         }
         else if ( !token.startsWith("Bearer ") ){
-            throw new Exception("Bearer 로 시작하지 않습니다");
+            throw new UnauthorizedException("Bearer 로 시작하지 않습니다");
         }
         token = token.substring(7);
         try {

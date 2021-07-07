@@ -4,5 +4,36 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="repository.CommentMapper">
+    <select id="getCommentList" resultType="domain.Comment" parameterType="Long">
+        SELECT comment_id, writer_id, board_id, content, created_date, update_date, user.nickname
+        FROM comment
+            LEFT JOIN user ON comment.writer_id=user.id
+        WHERE board_id=#{boardId}
+    </select>
+
+    <select id="getCommentById" resultType="domain.Comment" parameterType="Long">
+        SELECT * FROM comment WHERE comment_id=#{commentId}
+    </select>
+
+    <insert parameterType="domain.Comment" id="insertComment">
+        INSERT INTO comment(writer_id, board_id, content, created_date, update_date)
+        VALUES(#{writer_Id}, #{board_Id}, #{content}, DEFAULT, DEFAULT)
+    </insert>
+
+    <update parameterType="domain.Comment" id="updateComment">
+        UPDATE comment
+        SET
+            content=#{content},
+            update_date=DEFAULT
+        WHERE comment_id=#{comment_Id}
+    </update>
+
+    <delete parameterType="Long" id="deleteComment">
+        DELETE FROM comment WHERE comment_id=#{commentId}
+    </delete>
+
+    <delete parameterType="Long" id="deleteBoardComments">
+        DELETE FROM comment WHERE board_id=#{boardId}
+    </delete>
 
 </mapper>
