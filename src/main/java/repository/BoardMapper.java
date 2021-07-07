@@ -14,5 +14,5 @@ public interface BoardMapper {
     void updateBoard(Board board);
     List<Board> searchBoard(Board board);
     void deleteBoard(Long boardId);
-    List<Participant> getParticipantList(Long boardId);
+    int getMaxParticipants(Long boardId);
 }

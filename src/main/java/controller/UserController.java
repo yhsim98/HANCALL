@@ -61,6 +61,6 @@ public class UserController {
     @RequestMapping(value = "/my", method = RequestMethod.DELETE)
     public ResponseEntity secession() throws Exception{
         userService.deleteUser();
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

@@ -4,6 +4,7 @@ public class Participant {
     private Long board_Id;
     private Long user_Id;
     private String nickname;
+    private int max_participants;
 
     public String getNickname() {
         return nickname;
@@ -28,4 +29,13 @@ public class Participant {
     public void setUser_Id(Long user_Id) {
         this.user_Id = user_Id;
     }
+
+    public int getMax_participants() {
+        return max_participants;
+    }
+
+    public void setMax_participants(int max_participants) {
+        this.max_participants = max_participants;
+    }
+
 }

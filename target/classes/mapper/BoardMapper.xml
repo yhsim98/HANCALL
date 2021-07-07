@@ -6,28 +6,30 @@
 <mapper namespace="repository.BoardMapper">
 
     <insert parameterType="domain.Board" id="insertBoard">
-        INSERT INTO board(writer_id, starting_point, destination, title, content, created_date, update_date)
-            VALUES(#{writer_Id}, #{starting_Point}, #{destination}, #{title}, #{content}, DEFAULT, DEFAULT)
+        INSERT INTO board(writer_id, starting_point, destination, title, content, created_date, update_date, max_participants)
+            VALUES(#{writer_Id}, #{starting_Point}, #{destination}, #{title}, #{content}, DEFAULT, DEFAULT, #{max_Participants})
         <selectKey keyProperty="board_Id" resultType="Long">
             SELECT LAST_INSERT_ID()
         </selectKey>
     </insert>
 
     <select id="getBoardList" resultType="domain.Board">
-        SELECT board_id, starting_point, destination, title, update_date, user.nickname
+        SELECT board_id, starting_point, destination, title, update_date, user.nickname, max_participants
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
     </select>
 
     <select id="getBoardById" resultType="domain.Board" parameterType="Long">
-        SELECT board_id, writer_id, starting_point, destination, created_date, update_date, title, content, user.nickname
+        SELECT board_id, writer_id, starting_point, destination, created_date,
+               update_date, title, content, user.nickname, max_participants
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
         WHERE board_id=#{boardId}
     </select>
 
     <select id="searchBoard" parameterType="domain.Board" resultType="domain.Board">
-        SELECT board_id, starting_point, destination, created_date, update_date, title, content, user.nickname
+        SELECT board_id, starting_point, destination, created_date, update_date, title,
+               content, user.nickname, max_participants
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
         <where>
@@ -40,6 +42,10 @@
         </where>
     </select>
 
+    <select id="getMaxParticipants" parameterType="Long" resultType="Integer">
+        SELECT max_participants FROM board WHERE board_id=#{boardId}
+    </select>
+
     <update id="updateBoard" parameterType="domain.Board" >
         UPDATE board
         SET
@@ -47,6 +53,7 @@
             destination=#{destination},
             title=#{title},
             content=#{content},
+            max_participants=#{max_Participants},
             update_date=DEFAULT
         WHERE board_id=#{board_Id}
     </update>

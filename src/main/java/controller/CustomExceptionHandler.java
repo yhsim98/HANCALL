@@ -1,6 +1,7 @@
 package controller;
 
 import exception.ConflictException;
+import exception.ForbiddenException;
 import exception.NotFoundException;
 import exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,11 @@ public class CustomExceptionHandler {
     @ExceptionHandler({UnauthorizedException.class})
     public ResponseEntity unauthorizedException(final UnauthorizedException e){
         return new ResponseEntity(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler({ForbiddenException.class})
+    public ResponseEntity unauthorizedException(final ForbiddenException e){
+        return new ResponseEntity(e.getMessage(), HttpStatus.FORBIDDEN);
     }
 
 }

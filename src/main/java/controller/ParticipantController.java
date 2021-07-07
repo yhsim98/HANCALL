@@ -42,7 +42,7 @@ public class ParticipantController {
     @RequestMapping(value="/{boardId}", method = RequestMethod.DELETE)
     public ResponseEntity cancel(@PathVariable("boardId") Long boardId){
         participantService.cancel(boardId);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
 }

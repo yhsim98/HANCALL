@@ -1,6 +1,7 @@
 package service;
 
 import domain.Comment;
+import exception.ForbiddenException;
 import exception.NotFoundException;
 import exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class CommentServiceImpl implements CommentService{
         }
 
         if(!jwtUtil.getUserIdFromJWT(token).equals(selectComment.getWriter_Id())){
-            throw new UnauthorizedException("권한이 없습니다");
+            throw new ForbiddenException("권한이 없습니다");
         }
 
         commentMapper.deleteComment(commentId);
@@ -71,7 +72,7 @@ public class CommentServiceImpl implements CommentService{
         }
 
         if(!jwtUtil.getUserIdFromJWT(token).equals(selectComment.getWriter_Id())){
-            throw new UnauthorizedException("권한이 없습니다");
+            throw new ForbiddenException("권한이 없습니다");
         }
 
         comment.setComment_Id(commentId);

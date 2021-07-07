@@ -104,7 +104,7 @@ public class BoardController {
     @RequestMapping(value = "/{boardId}", method = RequestMethod.DELETE)
     public ResponseEntity deleteBoard(@PathVariable("boardId") Long boardId) throws Exception {
         boardService.deleteBoard(boardId);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
 }

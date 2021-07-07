@@ -2,9 +2,9 @@ package service;
 
 
 import domain.Board;
-import domain.Participant;
+import exception.ConflictException;
+import exception.ForbiddenException;
 import exception.NotFoundException;
-import exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -33,11 +33,12 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public Board createBoard(Board board) {
+    public Board createBoard(Board board) throws Exception {
         String token = getTokenFromServlet();
 
         board.setWriter_Id(jwtUtil.getUserIdFromJWT(token));
         boardMapper.insertBoard(board);
+        participantService.participate(board.getBoard_Id());
 
         return boardMapper.getBoardById(board.getBoard_Id());
     }
@@ -56,7 +57,9 @@ public class BoardServiceImpl implements BoardService{
             throw new NotFoundException("존재하지 않는 게시물입니다");
         }
 
-        return boardMapper.getBoardById(boardId);
+        selectBoard = boardMapper.getBoardById(boardId);
+        selectBoard.setMax_Participants(participantService.countParticipants(boardId));
+        return selectBoard;
     }
 
 
@@ -70,7 +73,11 @@ public class BoardServiceImpl implements BoardService{
         }
 
         if(!jwtUtil.getUserIdFromJWT(token).equals(selectBoard.getWriter_Id())){
-            throw new UnauthorizedException("권한이 없습니다");
+            throw new ForbiddenException("권한이 없습니다");
+        }
+
+        if(participantService.countParticipants(boardId) > board.getMax_Participants()){
+            throw new ConflictException("현재 참여인원보다 적습니다");
         }
 
         board.setBoard_Id(boardId);
@@ -97,12 +104,17 @@ public class BoardServiceImpl implements BoardService{
         }
 
         if(!jwtUtil.getUserIdFromJWT(token).equals(selectBoard.getWriter_Id())){
-            throw new UnauthorizedException("권한이 없습니다");
+            throw new ForbiddenException("권한이 없습니다");
         }
 
         participantService.deleteAllParticipantInBoard(boardId);
         commentService.deleteBoardComments(boardId);
         boardMapper.deleteBoard(boardId);
+    }
+
+    @Override
+    public int getMaxParticipants(Long boardId) {
+        return boardMapper.getMaxParticipants(boardId);
     }
 
     private String getTokenFromServlet(){

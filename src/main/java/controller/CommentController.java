@@ -39,7 +39,7 @@ public class CommentController {
     @RequestMapping(value="/{commentId}", method = RequestMethod.DELETE)
     public ResponseEntity deleteComment(@PathVariable("commentId") Long commentId) throws Exception{
         commentService.deleteComment(commentId);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     //댓글 수정

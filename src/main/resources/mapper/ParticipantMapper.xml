@@ -5,14 +5,21 @@
 
 <mapper namespace="repository.ParticipantMapper">
     <select id="getParticipantsList" parameterType="Long" resultType="domain.Participant">
-        SELECT board_id, user_id, user.nickname
+        SELECT participant.board_id, user_id, user.nickname, board.max_participants
         FROM participant
             LEFT JOIN user ON participant.user_id=user.id
-        WHERE board_id=#{boardId}
+            LEFT JOIN board ON participant.board_id=board.board_id
+        WHERE participant.board_id=#{boardId}
+    </select>
+
+    <select id="countParticipants" resultType="Integer" parameterType="Long">
+        SELECT count(*) FROM participant WHERE board_id=#{boardId}
     </select>
 
     <select id="getParticipant" parameterType="domain.Participant" resultType="domain.Participant">
-        SELECT * FROM participant WHERE board_id=#{board_Id} AND user_id=#{user_Id}
+        SELECT *
+        FROM participant
+        WHERE board_id=#{board_Id} AND user_id=#{user_Id}
     </select>
 
     <insert id="insertParticipant" parameterType="domain.Participant">

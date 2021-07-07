@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService{
         User selectUser = userMapper.getUserByEmail(user.getEmail());
 
         if(("".equals(selectUser) || selectUser == null) || isDeleted(selectUser.getId())){
-            throw new NotFoundException("존재하지 않는 계정입니다");
+            throw new UnauthorizedException("존재하지 않는 계정입니다");
         }
 
         if(!BCrypt.checkpw(user.getPassword(), selectUser.getPassword())){

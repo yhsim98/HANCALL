@@ -10,6 +10,8 @@ public class Board {
     private String title;
     private String content;
     private String nickname;
+    private int max_Participants;
+    private int now_Participants = 1;
 
     public String getUpdate_Date() {
         return update_Date;
@@ -81,5 +83,21 @@ public class Board {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public int getMax_Participants() {
+        return max_Participants;
+    }
+
+    public void setMax_Participants(int max_Participants) {
+        this.max_Participants = max_Participants;
+    }
+
+    public int getNow_Participants() {
+        return now_Participants;
+    }
+
+    public void setNow_Participants(int now_Participants) {
+        this.now_Participants = now_Participants;
     }
 }

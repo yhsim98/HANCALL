@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import repository.BoardMapper;
 import repository.ParticipantMapper;
 import util.JwtUtil;
 
@@ -16,11 +17,13 @@ import java.util.List;
 public class ParticipantServiceImpl implements ParticipantService{
 
     private final ParticipantMapper participantMapper;
+    private final BoardMapper boardMapper;
     private final JwtUtil jwtUtil;
 
     @Autowired
-    public ParticipantServiceImpl(ParticipantMapper participantMapper, JwtUtil jwtUtil) {
+    public ParticipantServiceImpl(ParticipantMapper participantMapper, BoardMapper boardMapper, JwtUtil jwtUtil) {
         this.participantMapper = participantMapper;
+        this.boardMapper = boardMapper;
         this.jwtUtil = jwtUtil;
     }
 
@@ -34,16 +37,20 @@ public class ParticipantServiceImpl implements ParticipantService{
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String token = request.getHeader("Authorization");
 
-        Participant participant = new Participant();
+        Participant newParticipant = new Participant();
 
-        participant.setUser_Id(jwtUtil.getUserIdFromJWT(token));
-        participant.setBoard_Id(boardId);
+        newParticipant.setUser_Id(jwtUtil.getUserIdFromJWT(token));
+        newParticipant.setBoard_Id(boardId);
 
-        if(participantMapper.getParticipant(participant) != null){
+        if(participantMapper.getParticipant(newParticipant) != null){
             throw new ConflictException("이미 참가하였습니다");
         }
 
-        participantMapper.insertParticipant(participant);
+        if(countParticipants(boardId) >= boardMapper.getMaxParticipants(boardId)){
+            throw new ConflictException("참여가능한 최대 인원입니다");
+        }
+
+        participantMapper.insertParticipant(newParticipant);
     }
 
     @Override
@@ -62,5 +69,10 @@ public class ParticipantServiceImpl implements ParticipantService{
     @Override
     public void deleteAllParticipantInBoard(Long boardId) {
         participantMapper.deleteAllParticipantInBoard(boardId);
+    }
+
+    @Override
+    public int countParticipants(Long boardId) {
+        return participantMapper.countParticipants(boardId);
     }
 }
