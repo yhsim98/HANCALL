@@ -12,5 +12,5 @@ public interface CommentMapper {
     void updateComment(Comment comment);
     void deleteComment(Long commentId);
     Comment getCommentById(Long commentId);
-    void deleteBoardComments(Long boardId);
+    void deleteAllCommentsInBoard(Long boardId);
 }

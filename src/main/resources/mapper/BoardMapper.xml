@@ -58,7 +58,7 @@
         WHERE board_id=#{board_Id}
     </update>
 
-    <delete id="deleteBoard" parameterType="Long">
+    <delete id="deleteAllCommentsInBoard" parameterType="Long">
         DELETE FROM board where board_id=#{boardId}
     </delete>
 </mapper>

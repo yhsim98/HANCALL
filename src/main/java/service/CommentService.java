@@ -11,5 +11,5 @@ public interface CommentService {
     void createComment(Comment comment, Long boardId);
     void deleteComment(Long commentId) throws Exception;
     void updateComment(Comment comment, Long commentId) throws Exception;
-    void deleteBoardComments(Long boardId);
+    void deleteAllCommentsInBoard(Long boardId);
 }

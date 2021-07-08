@@ -85,8 +85,11 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public List<Board> searchBoard(String startingPoint, String destination) {
+    public List<Board> searchBoard(String startingPoint, String destination) throws Exception {
         Board board = new Board();
+
+        if("".equals(startingPoint) && "".equals(destination))
+            throw new ConflictException("둘 중 하나는 입력해야 합니다");
 
         board.setStarting_Point(startingPoint);
         board.setDestination(destination);
@@ -108,7 +111,7 @@ public class BoardServiceImpl implements BoardService{
         }
 
         participantService.deleteAllParticipantInBoard(boardId);
-        commentService.deleteBoardComments(boardId);
+        commentService.deleteAllCommentsInBoard(boardId);
         boardMapper.deleteBoard(boardId);
     }
 
@@ -116,6 +119,7 @@ public class BoardServiceImpl implements BoardService{
     public int getMaxParticipants(Long boardId) {
         return boardMapper.getMaxParticipants(boardId);
     }
+
 
     private String getTokenFromServlet(){
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();

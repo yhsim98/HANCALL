@@ -88,7 +88,7 @@ public class BoardController {
     //게시글 수정
     @Auth
     @ResponseBody
-    @RequestMapping(value = "/{boardId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{boardId}", method = RequestMethod.PATCH)
     public ResponseEntity updateBoard(
             @PathVariable("boardId") Long boardId,
             @RequestBody Board board) throws Exception {

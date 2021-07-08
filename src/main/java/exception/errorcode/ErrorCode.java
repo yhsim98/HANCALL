@@ -2,7 +2,7 @@ package exception.errorcode;
 
 public enum ErrorCode {
 
-    //common
+    // common
     ACCESS_DENIED(402, "C001", "Access denied"),
 
     // User
@@ -19,7 +19,7 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(404, "CTO01", "comment not exist"),
 
     // Participant
-    ALREADY_PARTICIPATE(400, "P001", "This user is already participate")
+    ALREADY_PARTICIPATE(400, "P001", "already participate")
     ;
     private final int status;
     private final String code;

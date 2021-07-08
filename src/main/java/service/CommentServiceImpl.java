@@ -80,8 +80,8 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public void deleteBoardComments(Long boardId) {
-        commentMapper.deleteBoardComments(boardId);
+    public void deleteAllCommentsInBoard(Long boardId) {
+        commentMapper.deleteAllCommentsInBoard(boardId);
     }
 
     private String getTokenFromServlet(){
