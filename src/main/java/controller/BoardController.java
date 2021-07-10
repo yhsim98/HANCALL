@@ -30,7 +30,6 @@ public class BoardController {
     @ResponseBody
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<Map> createBoard(@RequestBody Board board) throws Exception {
-
         Board created = boardService.createBoard(board);
 
         Map result = new HashMap();
@@ -59,8 +58,8 @@ public class BoardController {
     //게시글 검색
     @ResponseBody
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public ResponseEntity<Map> searchBoard(@RequestParam(value="startingPoint", required = false, defaultValue = "") String startingPoint,
-                                           @RequestParam(value="destination", required = false, defaultValue = "") String destination) throws Exception {
+    public ResponseEntity<Map> searchBoard(@RequestParam(value="startingPoint", required = false) String startingPoint,
+                                           @RequestParam(value="destination", required = false) String destination) throws Exception {
 
         List<Board> searchList = boardService.searchBoard(startingPoint, destination);
 
@@ -80,7 +79,7 @@ public class BoardController {
 
         Map result = new HashMap();
 
-        result.put("data", selectBoard);
+        result.put("detail", selectBoard);
 
         return new ResponseEntity(result, HttpStatus.OK);
     }
@@ -103,6 +102,7 @@ public class BoardController {
     @ResponseBody
     @RequestMapping(value = "/{boardId}", method = RequestMethod.DELETE)
     public ResponseEntity deleteBoard(@PathVariable("boardId") Long boardId) throws Exception {
+        System.out.println(boardId);
         boardService.deleteBoard(boardId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

@@ -50,7 +50,7 @@ public class UserController {
     //회원 정보 수정
     @Auth
     @ResponseBody
-    @RequestMapping(value="/my", method = RequestMethod.PUT)
+    @RequestMapping(value="/my", method = RequestMethod.PATCH)
     public ResponseEntity<User> updateUser(@RequestBody User user) throws Exception{
         return new ResponseEntity(userService.updateUser(user), HttpStatus.CREATED);
     }

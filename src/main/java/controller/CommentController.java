@@ -45,7 +45,7 @@ public class CommentController {
     //댓글 수정
     @Auth
     @ResponseBody
-    @RequestMapping(value="/{commentId}", method = RequestMethod.PUT)
+    @RequestMapping(value="/{commentId}", method = RequestMethod.PATCH)
     public ResponseEntity updateComment(@RequestBody Comment comment,
                                         @PathVariable Long commentId) throws Exception{
 

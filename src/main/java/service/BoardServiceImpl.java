@@ -34,8 +34,14 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public Board createBoard(Board board) throws Exception {
+        if(board.getContent() == null){
+            System.out.println("이거 null");
+            throw new ConflictException("이거 null");
+        }
+        if("".equals(board.getContent())){
+            throw new ConflictException("다 입력해주라");
+        }
         String token = getTokenFromServlet();
-
         board.setWriter_Id(jwtUtil.getUserIdFromJWT(token));
         boardMapper.insertBoard(board);
         participantService.participate(board.getBoard_Id());
@@ -53,12 +59,12 @@ public class BoardServiceImpl implements BoardService{
     public Board getBoard(Long boardId) throws Exception{
         Board selectBoard = boardMapper.getBoardById(boardId);
 
-        if("".equals(selectBoard) || selectBoard == null){
+        if(selectBoard == null){
             throw new NotFoundException("존재하지 않는 게시물입니다");
         }
 
         selectBoard = boardMapper.getBoardById(boardId);
-        selectBoard.setMax_Participants(participantService.countParticipants(boardId));
+        selectBoard.setNow_Participants(participantService.countParticipants(boardId));
         return selectBoard;
     }
 
@@ -68,7 +74,7 @@ public class BoardServiceImpl implements BoardService{
         Board selectBoard = boardMapper.getBoardById(boardId);
         String token = getTokenFromServlet();
 
-        if("".equals(selectBoard) || selectBoard == null){
+        if(selectBoard == null){
             throw new NotFoundException("존재하지 않는 게시물입니다");
         }
 
@@ -88,7 +94,7 @@ public class BoardServiceImpl implements BoardService{
     public List<Board> searchBoard(String startingPoint, String destination) throws Exception {
         Board board = new Board();
 
-        if("".equals(startingPoint) && "".equals(destination))
+        if(startingPoint == null && destination == null)
             throw new ConflictException("둘 중 하나는 입력해야 합니다");
 
         board.setStarting_Point(startingPoint);
@@ -102,7 +108,7 @@ public class BoardServiceImpl implements BoardService{
         Board selectBoard = boardMapper.getBoardById(boardId);
         String token = getTokenFromServlet();
 
-        if("".equals(selectBoard) || selectBoard == null){
+        if(selectBoard == null){
             throw new NotFoundException("존재하지 않는 게시물입니다");
         }
 

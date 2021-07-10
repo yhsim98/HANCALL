@@ -33,10 +33,10 @@
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
         <where>
-            <if test="destination != ''">
+            <if test="destination != null">
                 destination=#{destination}
             </if>
-            <if test="starting_Point != ''">
+            <if test="starting_Point != null">
                 AND starting_point=#{starting_Point}
             </if>
         </where>
@@ -58,7 +58,7 @@
         WHERE board_id=#{board_Id}
     </update>
 
-    <delete id="deleteAllCommentsInBoard" parameterType="Long">
+    <delete id="deleteBoard" parameterType="Long">
         DELETE FROM board where board_id=#{boardId}
     </delete>
 </mapper>

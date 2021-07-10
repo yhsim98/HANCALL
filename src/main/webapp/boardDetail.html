@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="EUC-KR">
-    <title>°Ô½ÃÆÇ »ó¼¼È­¸é</title>
+    <meta charset="UTF-8">
+    <title>ê²Œì‹œíŒ ìƒì„¸</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
@@ -14,27 +13,67 @@
             boardDetail();
 
             boardDetailResult();
+
+            boardDelete();
+
+            boardParticipate();
         });
 
+        const id = localStorage.getItem("boardId");
+
+        function boardParticipate(){
+        }
+
+        //ì‚¬ìš©ì ì‚­ì œ ìš”ì²­
+        function boardDelete() {
+            //ì‚­ì œ ë²„íŠ¼ í´ë¦­
+            $('#btnDelete').on('click',function(){
+                var result = confirm("ê²Œì‹œë¬¼ì„ ì •ë§ë¡œ ì‚­ì œí•˜ì‹œê² ìŠµë‹ˆê¹Œ?");
+                if(result) {
+                    $.ajax({
+                        url:'board/'+ id,  type:'DELETE',
+                        contentType:'application/json;charset=utf-8',
+                        dataType:'json',
+                        headers: {
+                            Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNjI2MDA1MzE2fQ.1EbkbjNF5Xqj-8K6VKdXYSQ6aPZmp6goyPWejuUBoeM'
+                        },
+                        error:function(xhr,status,msg){
+                            console.log("ìƒíƒœê°’ :" + status + " Httpì—ëŸ¬ë©”ì‹œì§€ :"+msg);
+                        }, success:function(xhr) {
+                            alert("ì‚­ì œë˜ì—ˆìŠµë‹ˆë‹¤");
+                            location.href = "boardList_Json.html";
+                        }
+                    });
+                }
+            }); //ì‚­ì œ ë²„íŠ¼ í´ë¦­
+        }//userDelete
+
         function boardDetail(){
-            var id = localStorage.getItem("boardId");
+            console.log(id);
             $.ajax({
                 url:'board/' + id,
                 type:'GET',
                 contentType:'application/json;charset=utf-8',
                 dataType:'json',
                 error:function(xhr,status,msg){
-                    alert("»óÅÂ°ª :" + status + " Http¿¡·¯¸Ş½ÃÁö :"+msg);
+                    alert("ìƒíƒœê°’ :" + status + " Httpì—ëŸ¬ë©”ì‹œì§€ :"+msg);
                 },
                 success:boardDetailResult
             });
         }
 
         function boardDetailResult(xhr){
-            var data = xhr.data;
-            document.getElementById("title").innerText=data.title;
-            document.getElementById("nickname").innerText=data.nickname;
-            document.getElementById("content").innerText=data.content;
+            $.each(xhr.detail,function(idx,data) {
+                document.getElementById("title").innerText = data.title;
+                document.getElementById("nickname").innerText = data.nickname;
+                document.getElementById("content").innerText = data.content;
+                document.getElementById("starting_Point").innerText = data.starting_Point;
+                document.getElementById("destination").innerText = data.destination;
+                document.getElementById("max_participants").innerText = data.max_Participants;
+                document.getElementById("now_participants").innerText = data.now_Participants;
+                localStorage.setItem("destination", data.destination);
+                localStorage.setItem("starting_Point", data.starting_Point);
+            });
         }
     </script>
 </head>
@@ -42,79 +81,125 @@
 <body>
 <div class="container">
     <div class="col-xs-12" style="margin:15px auto;">
-        <label style="font-size:20px;"><span class="glyphicon glyphicon-list-alt"></span>°Ô½Ã±Û »ó¼¼</label>
+        <label style="font-size:20px;"><span class="glyphicon glyphicon-list-alt"></span>ê²Œì‹œê¸€ ìƒì„¸</label>
     </div>
 
     <div class="col-xs-12">
         <form action="/insertProc" method="post">
             <dl class="dl-horizontal">
-                <dt>Á¦¸ñ</dt>
+                <dt>ì œëª©</dt>
                 <dd id="title"></dd>
 
-                <dt>ÀÛ¼ºÀÚ</dt>
+                <dt>ì‘ì„±ì</dt>
                 <dd id="nickname"></dd>
 
-                <dt>³»¿ë</dt>
+                <dt>ë‚´ìš©</dt>
                 <dd id="content"></dd>
+
+                <dt>ì¶œë°œì§€</dt>
+                <dd id="starting_Point"></dd>
+
+                <dt>ëª©ì ì§€</dt>
+                <dd id="destination"></dd>
+
+                <dt>ìµœëŒ€ ì¸ì›</dt>
+                <dd id="max_participants"></dd>
+
+                <dt>í˜„ì¬ ì¸ì›</dt>
+                <dd id="now_participants"></dd>
+
+                <input type="button"  class="btn btn-primary" value="ì°¸ì—¬"  id="btnParticipate" />
             </dl>
         </form>
         <div class="btn-group">
-            <input type="button"  class="btn btn-primary" value="¼öÁ¤"  id="btnUpdate" />
-            <input type="button"  class="btn btn-primary" value="»èÁ¦"  id="btnDelete" />
+            <input type="button"  class="btn btn-primary" value="ìˆ˜ì •"  id="btnUpdate" />
+            <input type="button"  class="btn btn-primary" value="ì‚­ì œ"  id="btnDelete" />
         </div>
     </div>
-    <div id="map" style="width:500px;height:400px;"></div>
 
-    <!-- services¿Í clusterer, drawing ¶óÀÌºê·¯¸® ºÒ·¯¿À±â -->
+    <!-- ì¹´ì¹´ì˜¤ ë§µ -->
+    <div id="map" style="width:500px;height:400px;"></div>
+    <!-- servicesì™€ clusterer, drawing ë¼ì´ë¸ŒëŸ¬ë¦¬ ë¶ˆëŸ¬ì˜¤ê¸° -->
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=26e577f41bb934567564e07fa054d3e4&libraries=services,clusterer,drawing"></script>
     <script>
-        var mapContainer = document.getElementById('map'), // Áöµµ¸¦ Ç¥½ÃÇÒ div
+        var mapContainer = document.getElementById('map'), // ì§€ë„ë¥¼ í‘œì‹œí•  div
             mapOption = {
-                center: new kakao.maps.LatLng(33.450701, 126.570667), // ÁöµµÀÇ Áß½ÉÁÂÇ¥
-                level: 3 // ÁöµµÀÇ È®´ë ·¹º§
+                center: new kakao.maps.LatLng(33.450701, 126.570667), // ì§€ë„ì˜ ì¤‘ì‹¬ì¢Œí‘œ
+                level: 10 // ì§€ë„ì˜ í™•ëŒ€ ë ˆë²¨
             };
 
-        // Áöµµ¸¦ »ı¼ºÇÕ´Ï´Ù
+        // ì§€ë„ë¥¼ ìƒì„±í•©ë‹ˆë‹¤
         var map = new kakao.maps.Map(mapContainer, mapOption);
 
-        // ÁÖ¼Ò-ÁÂÇ¥ º¯È¯ °´Ã¼¸¦ »ı¼ºÇÕ´Ï´Ù
+        // ì£¼ì†Œ-ì¢Œí‘œ ë³€í™˜ ê°ì²´ë¥¼ ìƒì„±í•©ë‹ˆë‹¤
         var geocoder = new kakao.maps.services.Geocoder();
 
-        // ÁÖ¼Ò·Î ÁÂÇ¥¸¦ °Ë»öÇÕ´Ï´Ù
-        geocoder.addressSearch('Á¦ÁÖÆ¯º°ÀÚÄ¡µµ Á¦ÁÖ½Ã Ã·´Ü·Î 242', function(result, status) {
+        // ì¶œë°œì§€, ë„ì°©ì§€ ìƒì„±
+        var destination = localStorage.getItem("destination");
+        localStorage.removeItem("destination");
+        var starting_Point = localStorage.getItem("starting_Point");
+        localStorage.removeItem("starting_Point");
 
-            // Á¤»óÀûÀ¸·Î °Ë»öÀÌ ¿Ï·áµÆÀ¸¸é
+        geocoder.addressSearch(starting_Point, function(result, status) {
+
+            // ì •ìƒì ìœ¼ë¡œ ê²€ìƒ‰ì´ ì™„ë£Œëìœ¼ë©´
             if (status === kakao.maps.services.Status.OK) {
 
                 var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-                // °á°ú°ªÀ¸·Î ¹ŞÀº À§Ä¡¸¦ ¸¶Ä¿·Î Ç¥½ÃÇÕ´Ï´Ù
+                // ê²°ê³¼ê°’ìœ¼ë¡œ ë°›ì€ ìœ„ì¹˜ë¥¼ ë§ˆì»¤ë¡œ í‘œì‹œí•©ë‹ˆë‹¤
                 var marker = new kakao.maps.Marker({
                     map: map,
                     position: coords
                 });
 
-                // ÀÎÆ÷À©µµ¿ì·Î Àå¼Ò¿¡ ´ëÇÑ ¼³¸íÀ» Ç¥½ÃÇÕ´Ï´Ù
+                // ì¸í¬ìœˆë„ìš°ë¡œ ì¥ì†Œì— ëŒ€í•œ ì„¤ëª…ì„ í‘œì‹œí•©ë‹ˆë‹¤
                 var infowindow = new kakao.maps.InfoWindow({
-                    content: '<div style="width:150px;text-align:center;padding:6px 0;">Ãâ¹ßÁö</div>'
+                    content: '<div style="width:150px;text-align:center;padding:6px 0;">ì¶œë°œì§€</div>'
                 });
                 infowindow.open(map, marker);
 
-                // ÁöµµÀÇ Áß½ÉÀ» °á°ú°ªÀ¸·Î ¹ŞÀº À§Ä¡·Î ÀÌµ¿½ÃÅµ´Ï´Ù
+                // ì§€ë„ì˜ ì¤‘ì‹¬ì„ ê²°ê³¼ê°’ìœ¼ë¡œ ë°›ì€ ìœ„ì¹˜ë¡œ ì´ë™ì‹œí‚µë‹ˆë‹¤
                 map.setCenter(coords);
             }
         });
+
+        geocoder.addressSearch(destination, function(result, status) {
+
+            // ì •ìƒì ìœ¼ë¡œ ê²€ìƒ‰ì´ ì™„ë£Œëìœ¼ë©´
+            if (status === kakao.maps.services.Status.OK) {
+
+                var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                // ê²°ê³¼ê°’ìœ¼ë¡œ ë°›ì€ ìœ„ì¹˜ë¥¼ ë§ˆì»¤ë¡œ í‘œì‹œí•©ë‹ˆë‹¤
+                var marker = new kakao.maps.Marker({
+                    map: map,
+                    position: coords
+                });
+
+                // ì¸í¬ìœˆë„ìš°ë¡œ ì¥ì†Œì— ëŒ€í•œ ì„¤ëª…ì„ í‘œì‹œí•©ë‹ˆë‹¤
+                var infowindow = new kakao.maps.InfoWindow({
+                    content: '<div style="width:150px;text-align:center;padding:6px 0;">ë„ì°©ì§€</div>'
+                });
+                infowindow.open(map, marker);
+
+                // ì§€ë„ì˜ ì¤‘ì‹¬ì„ ê²°ê³¼ê°’ìœ¼ë¡œ ë°›ì€ ìœ„ì¹˜ë¡œ ì´ë™ì‹œí‚µë‹ˆë‹¤
+                map.setCenter(coords);
+            }
+        });
+
+
     </script>
 
-    <!--  ´ñ±Û  -->
+    <!--  ëŒ“ê¸€  -->
     <div class="container">
         <label for="content">comment</label>
         <form name="commentInsertForm">
             <div class="input-group">
                 <input type="hidden" name="bno" value="${data.board_Id}"/>
-                <input type="text" class="form-control" id="comment" name="content" placeholder="³»¿ëÀ» ÀÔ·ÂÇÏ¼¼¿ä.">
+                <input type="text" class="form-control" id="comment" name="content" placeholder="ë‚´ìš©ì„ ì…ë ¥í•˜ì„¸ìš”.">
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" name="commentInsertBtn">µî·Ï</button>
+                    <button class="btn btn-default" type="button" name="commentInsertBtn">ë“±ë¡</button>
                </span>
             </div>
         </form>
@@ -125,6 +210,6 @@
     </div>
 </div>
 </br>
-<a href="boardList_Json.html">°Ô½ÃÆÇ ÀÌµ¿</a>
+<a href="boardList_Json.html">ê²Œì‹œíŒ ëª©ë¡ìœ¼ë¡œ ì´ë™</a>
 </body>
 </html>

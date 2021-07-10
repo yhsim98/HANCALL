@@ -11,7 +11,7 @@ public class Board {
     private String content;
     private String nickname;
     private int max_Participants;
-    private int now_Participants = 1;
+    private int now_Participants;
 
     public String getUpdate_Date() {
         return update_Date;

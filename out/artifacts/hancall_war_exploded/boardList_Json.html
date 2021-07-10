@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="EUC-KR">
-<title>�Խ��� ���</title>
+	<meta charset="UTF-8">
+<title>게시판 목록</title>
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
 <!-- Optional theme -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-<script type="text/javascript" >
+<script type="text/javascript">
 	$(function(){
 		boardList();
 
@@ -16,23 +16,43 @@
 
 		boardInsert();
 
+		init();
 	});
 
-	//����� ��� ��û
+	//초기화
+	function init() {
+		//초기화 버튼 클릭
+		$('#btnInit').on('click',function(){
+			$('#form1').each(function(){
+				this.reset();
+			});
+		});
+	}//init
+
+	//사용자 등록 요청
 	function boardInsert(){
-		//��� ��ư Ŭ��
+		//등록 버튼 클릭
 		$('#btnInsert').on('click',function(){
 			var title = $('input:text[name="title"]').val();
-			var content = $('input:radio[name="content"]:checked').val();
-			var destination = $('select[name="destination"]').val();
+			var content = $('input:text[name="content"]').val();
+			console.log(starting_Point);
+			console.log(destination);
+			var max_Participants = $('input:text[name="max_Participants"]').val();
+			if(title == '' || content == '' || destination == null || starting_Point == null || max_Participants == ''){
+				alert("전부 입력해주세요");
+				return;
+			}
+
 			$.ajax({
 				url: "board/",
 				type: 'POST',
 				dataType: 'json',
-				data: JSON.stringify({ title:title,content: content, destination : destination }),
+				data: JSON.stringify({ title:title,content: content, destination : destination,
+					starting_Point: starting_Point, max_Participants : max_Participants}),
 				contentType: 'application/json',
-				mimeType: 'application/json',
-				Authorization: '',
+				headers: {
+					Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNjI2MDA1MzE2fQ.1EbkbjNF5Xqj-8K6VKdXYSQ6aPZmp6goyPWejuUBoeM'
+				},
 				success: function(response) {
 					if(response.result == true) {
 						boardList();
@@ -42,12 +62,13 @@
 					alert(" status: "+status+" er:"+message);
 				}
 			});
-		});//��� ��ư Ŭ��
+		});//등록 버튼 클릭
 	}//userInsert
 
-	//�Խù� ��ȸ ��û
+
+	//게시물 조회 요청
 	function boardSelect(){
-		//��ȸ ��ư Ŭ��
+		//조회 버튼 클릭
 		$('body').on('click', '#btnSelect', function(){
 			var boardId = $(this).closest('tr').find('#hidden_id').val();
 			localStorage.setItem("boardId", boardId);
@@ -56,7 +77,7 @@
 	}
 
 
-	//����� ��� ��ȸ ��û
+	//사용자 목록 조회 요청
 	function boardList() {
 		$.ajax({
 			url:'board/',
@@ -64,13 +85,13 @@
 			contentType:'application/json;charset=utf-8',
 			dataType:'json',
 			error:function(xhr,status,msg){
-				alert("���°� :" + status + " Http�����޽��� :"+msg);
+				alert("상태값 :" + status + " Http에러메시지 :"+msg);
 			},
 			success:boardListResult
 		});
 	}//userList
 	
-	//����� ��� ��ȸ ����
+	//사용자 목록 조회 응답
 	function boardListResult(xhr) {
 		console.log(xhr.data);
 		$("tbody").empty();
@@ -79,7 +100,7 @@
 			.append($('<td>').html(item.title))
 			.append($('<td>').html(item.nickname))
 			.append($('<td>').html(item.destination))
-			.append($('<td>').html('<button id=\'btnSelect\'>��ȸ</button>'))
+			.append($('<td>').html('<button id=\'btnSelect\'>조회</button>'))
 			.append($('<input type=\'hidden\' id=\'hidden_id\'>').val(item.board_Id))
 			.appendTo('tbody');
 		});//each
@@ -90,33 +111,71 @@
 <body>
 <div class="container">
 	<form id="form1"  class="form-horizontal">
-		<h2>�Խñ� ���</h2>
+		<h2>게시글 등록</h2>
 		<div class="form-group">
-			<label>����:</label>
+			<label>제목:</label>
 			<input type="text"  class="form-control"  name="title" >
 		</div>
 		<div class="form-group">
-			<label>�۾���:</label>
+			<label>내용:</label>
 			<input type="text"  class="form-control"  name="content" >
 		</div>
 		<div class="form-group">
-			<label>������:</label>
-			<input type="text"  class="form-control"  name="destination" >
+			<label>출발지:</label>
+			<button type="button" class="zip_code_btn" onclick="javascript:goPopup();">도로명번호</button><br/>
+			<div id="starting_Point">도로명번호를 선택해주세요</div>
+		</div>
+		<div class="form-group">
+			<label>목적지:</label>
+			<button type="button" class="zip_code_btn" onclick="javascript:goPopup2();">도로명번호</button><br/>
+			<div id="destination">도로명번호를 선택해주세요</div>
+		</div>
+		<div class="form-group">
+			<label>최대인원:</label>
+			<input type="text"  class="form-control"  name="max_Participants" >
 		</div>
 		<div class="btn-group">
-			<input type="button"  class="btn btn-primary" value="���"  id="btnInsert" />
+			<input type="button"  class="btn btn-primary" value="초기화"  id="btnInit" />
+			<input type="button"  class="btn btn-primary" value="등록"  id="btnInsert" />
 		</div>
 	</form>
 </div>
+
+<!--도로명주소 받아오기-->
+<script>
+	var starting_Point;
+	function goPopup(){
+		var pop = window.open("%20jusoPopup.jsp","pop","width=570,height=420, scrollbars=yes, resizable=yes");
+
+	}
+	function jusoCallBack(roadAddrPart1){
+		// 2017년 2월 제공항목이 추가되었습니다. 원하시는 항목을 추가하여 사용하시면 됩니다.
+		starting_Point = document.getElementById("starting_Point").innerText=roadAddrPart1;
+	}
+
+</script>
+
+<script>
+	var destination;
+	function goPopup2(){
+		var pop = window.open("jusoPopup2.jsp","pop","width=570,height=420, scrollbars=yes, resizable=yes");
+
+	}
+	function jusoCallBack2(roadAddrPart1){
+		// 2017년 2월 제공항목이 추가되었습니다. 원하시는 항목을 추가하여 사용하시면 됩니다.
+		destination = document.getElementById("destination").innerText=roadAddrPart1;
+	}
+
+</script>
 <hr/>
 <div class="container">
-	<h2>�Խñ� ���</h2>
+	<h2>게시글 목록</h2>
 	<table class="table text-center">
 		<thead>
 		<tr>
-			<th class="text-center">����</th>
-			<th class="text-center">�۾���</th>
-			<th class="text-center">������</th>
+			<th class="text-center">제목</th>
+			<th class="text-center">글쓴이</th>
+			<th class="text-center">목적지</th>
 		</tr>
 		</thead>
 		<tbody></tbody>

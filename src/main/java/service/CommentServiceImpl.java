@@ -3,7 +3,6 @@ package service;
 import domain.Comment;
 import exception.ForbiddenException;
 import exception.NotFoundException;
-import exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -13,7 +12,6 @@ import util.JwtUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
