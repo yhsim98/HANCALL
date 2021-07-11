@@ -44,8 +44,8 @@ public class BoardServiceImpl implements BoardService{
         String token = getTokenFromServlet();
         board.setWriter_Id(jwtUtil.getUserIdFromJWT(token));
         boardMapper.insertBoard(board);
-        participantService.participate(board.getBoard_Id());
 
+        participantService.participate(board.getBoard_Id());
         return boardMapper.getBoardById(board.getBoard_Id());
     }
 

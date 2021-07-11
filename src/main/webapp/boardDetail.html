@@ -12,44 +12,54 @@
         $(function(){
             boardDetail();
 
-            boardDetailResult();
-
             boardDelete();
 
             boardParticipate();
         });
 
         const id = localStorage.getItem("boardId");
-
-        function boardParticipate(){
+        var destination, starting_Point;
+        //게시판 삭제
+        function boardDelete(){
+            $('#btnDelete').on('click',function(){
+                $.ajax({
+                    url:'board/'+ id,  type:'DELETE',
+                    contentType:'application/json;charset=utf-8',
+                    dataType:'json',
+                    headers: {
+                        Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6NCwiZXhwIjoxNjI2MDEzMDE1fQ.uDkHYUA7RllFEiKiaN5qhCb316OLkoUyIa5ZxdkUjO4'
+                    },
+                    error:function(xhr,status,msg){
+                        console.log("상태값 :" + status + " Http에러메시지 :"+msg);
+                    }, success:function() {
+                        alert("삭제되었습니다");
+                        location.href = "boardList_Json.html";
+                    }
+                });
+            });
         }
 
-        //사용자 삭제 요청
-        function boardDelete() {
-            //삭제 버튼 클릭
-            $('#btnDelete').on('click',function(){
-                var result = confirm("게시물을 정말로 삭제하시겠습니까?");
-                if(result) {
-                    $.ajax({
-                        url:'board/'+ id,  type:'DELETE',
-                        contentType:'application/json;charset=utf-8',
-                        dataType:'json',
-                        headers: {
-                            Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNjI2MDA1MzE2fQ.1EbkbjNF5Xqj-8K6VKdXYSQ6aPZmp6goyPWejuUBoeM'
-                        },
-                        error:function(xhr,status,msg){
-                            console.log("상태값 :" + status + " Http에러메시지 :"+msg);
-                        }, success:function(xhr) {
-                            alert("삭제되었습니다");
-                            location.href = "boardList_Json.html";
-                        }
-                    });
-                }
-            }); //삭제 버튼 클릭
-        }//userDelete
+        //사용자 참가 요청
+        function boardParticipate() {
+            //참가 버튼 클릭
+            $('#btnParticipate').on('click', function () {
+                $.ajax({
+                    url: 'participant/' + id,
+                    type: 'POST',
+                    headers: {
+                        Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6NCwiZXhwIjoxNjI2MDEzMDE1fQ.uDkHYUA7RllFEiKiaN5qhCb316OLkoUyIa5ZxdkUjO4'
+                    },
+                    error: function (xhr, status, msg) {
+                        console.log("상태값 :" + status + " Http에러메시지 :" + msg);
+                    },
+                    success: function(){
+                        window.location.href = "boardDetail.html";
+                    }
+                });
+            });
+        }
 
         function boardDetail(){
-            console.log(id);
             $.ajax({
                 url:'board/' + id,
                 type:'GET',
@@ -62,19 +72,21 @@
             });
         }
 
-        function boardDetailResult(xhr){
-            $.each(xhr.detail,function(idx,data) {
-                document.getElementById("title").innerText = data.title;
-                document.getElementById("nickname").innerText = data.nickname;
-                document.getElementById("content").innerText = data.content;
-                document.getElementById("starting_Point").innerText = data.starting_Point;
-                document.getElementById("destination").innerText = data.destination;
-                document.getElementById("max_participants").innerText = data.max_Participants;
-                document.getElementById("now_participants").innerText = data.now_Participants;
-                localStorage.setItem("destination", data.destination);
-                localStorage.setItem("starting_Point", data.starting_Point);
-            });
+        function boardDetailResult(xhr) {
+            const data = xhr.data;
+            document.getElementById("title").innerText = data.title;
+            document.getElementById("nickname").innerText = data.nickname;
+            document.getElementById("content").innerText = data.content;
+            document.getElementById("starting_Point").innerText = data.starting_Point;
+            document.getElementById("destination").innerText = data.destination;
+            document.getElementById("max_participants").innerText = data.max_Participants;
+            document.getElementById("now_participants").innerText = data.now_Participants;
+            destination = data.destination;
+            starting_Point = data.starting_Point;
+            console.log(destination);
         }
+
+
     </script>
 </head>
 
@@ -85,7 +97,6 @@
     </div>
 
     <div class="col-xs-12">
-        <form action="/insertProc" method="post">
             <dl class="dl-horizontal">
                 <dt>제목</dt>
                 <dd id="title"></dd>
@@ -125,7 +136,7 @@
         var mapContainer = document.getElementById('map'), // 지도를 표시할 div
             mapOption = {
                 center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-                level: 10 // 지도의 확대 레벨
+                level: 8 // 지도의 확대 레벨
             };
 
         // 지도를 생성합니다
@@ -135,11 +146,12 @@
         var geocoder = new kakao.maps.services.Geocoder();
 
         // 출발지, 도착지 생성
-        var destination = localStorage.getItem("destination");
-        localStorage.removeItem("destination");
-        var starting_Point = localStorage.getItem("starting_Point");
-        localStorage.removeItem("starting_Point");
+        // var destination = localStorage.getItem("destination");
+        // localStorage.removeItem("destination");
+        // var starting_Point = localStorage.getItem("starting_Point");
+        // localStorage.removeItem("starting_Point");
 
+        console.log(destination);
         geocoder.addressSearch(starting_Point, function(result, status) {
 
             // 정상적으로 검색이 완료됐으면

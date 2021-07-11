@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import service.ParticipantService;
 
 @Controller
-@RequestMapping(value="/participant/*")
+@RequestMapping(value="/participant")
 public class ParticipantController {
 
     private final ParticipantService participantService;

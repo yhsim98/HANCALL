@@ -79,7 +79,7 @@ public class BoardController {
 
         Map result = new HashMap();
 
-        result.put("detail", selectBoard);
+        result.put("data", selectBoard);
 
         return new ResponseEntity(result, HttpStatus.OK);
     }
@@ -102,7 +102,6 @@ public class BoardController {
     @ResponseBody
     @RequestMapping(value = "/{boardId}", method = RequestMethod.DELETE)
     public ResponseEntity deleteBoard(@PathVariable("boardId") Long boardId) throws Exception {
-        System.out.println(boardId);
         boardService.deleteBoard(boardId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
