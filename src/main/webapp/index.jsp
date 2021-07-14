@@ -12,5 +12,6 @@
   </head>
   <body>
   <a href="boardList_Json.html">게시판 이동</a>
+  <a href="User.html">로그인</a>
   </body>
 </html>

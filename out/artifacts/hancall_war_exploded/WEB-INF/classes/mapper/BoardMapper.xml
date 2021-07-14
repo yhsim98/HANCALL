@@ -13,10 +13,12 @@
         </selectKey>
     </insert>
 
-    <select id="getBoardList" resultType="domain.Board">
+    <select id="getBoardList" resultType="domain.Board" parameterType="Long">
         SELECT board_id, starting_point, destination, title, update_date, user.nickname, max_participants
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
+        ORDER BY board_id DESC
+        LIMIT #{start}, #{pageSize}
     </select>
 
     <select id="getBoardById" resultType="domain.Board" parameterType="Long">

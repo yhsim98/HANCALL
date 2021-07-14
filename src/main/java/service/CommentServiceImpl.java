@@ -50,7 +50,7 @@ public class CommentServiceImpl implements CommentService{
         Comment selectComment = commentMapper.getCommentById(commentId);
         String token = getTokenFromServlet();
 
-        if("".equals(selectComment) || selectComment == null){
+        if(selectComment == null){
             throw new EntityNotFoundException(ErrorCode.COMMENT_NOT_FOUND);
         }
 
@@ -66,7 +66,7 @@ public class CommentServiceImpl implements CommentService{
         Comment selectComment = commentMapper.getCommentById(commentId);
         String token = getTokenFromServlet();
 
-        if("".equals(selectComment) || selectComment == null){
+        if(selectComment == null){
             throw new EntityNotFoundException(ErrorCode.COMMENT_NOT_FOUND);
         }
 

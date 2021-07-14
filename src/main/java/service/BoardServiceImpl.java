@@ -15,7 +15,6 @@ import util.JwtUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -27,8 +26,8 @@ public class BoardServiceImpl implements BoardService{
     private final ParticipantService participantService;
     private final JwtUtil jwtUtil;
 
-    private static Long boardNum = 0L;
-    private final static int pageSize = 10;
+    private static Long pageNum = 0L;
+    private final static Long pageSize = 10L;
 
     @Autowired
     public BoardServiceImpl(BoardMapper boardMapper, CommentService commentService, ParticipantService participantService, JwtUtil jwtUtil) {
@@ -45,15 +44,17 @@ public class BoardServiceImpl implements BoardService{
         boardMapper.insertBoard(board);
 
         participantService.participate(board.getBoard_Id());
+        pageNum++;
         return boardMapper.getBoardById(board.getBoard_Id());
     }
 
     @Override
-    public Map getBoardList(int page) {
-
+    public Map getBoardList(Long page) {
+        if(page <= 0) page = 1L;
+        Long start = (page - 1) * pageSize;
 
         Map result = new HashMap();
-        result.put("data", boardMapper.getBoardList());
+        result.put("data", boardMapper.getBoardList(start, pageSize));
         return result;
     }
 

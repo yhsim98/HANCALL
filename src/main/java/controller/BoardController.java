@@ -35,7 +35,7 @@ public class BoardController {
     //게시물 목록 조회
     @ResponseBody
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<Map> getBoardList(@ModelAttribute("p") int page) throws Exception {
+    public ResponseEntity<Map> getBoardList(@ModelAttribute("p") Long page) throws Exception {
         return new ResponseEntity(boardService.getBoardList(page), HttpStatus.OK);
     }
 

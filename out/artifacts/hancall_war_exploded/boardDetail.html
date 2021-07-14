@@ -16,10 +16,14 @@
             boardDelete();
 
             boardParticipate();
+
+            participantList();
         });
 
         const id = localStorage.getItem("boardId");
         var destination, starting_Point;
+        var token = localStorage.getItem("jwt");
+
         //게시판 삭제
         function boardDelete(){
             $('#btnDelete').on('click',function(){
@@ -28,7 +32,7 @@
                     contentType:'application/json;charset=utf-8',
                     dataType:'json',
                     headers: {
-                        Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNjI2MzEzOTUyfQ.oYgIjEgauvxXBzIDfCet3VFf_WV50QoCISvPVNK0x0M'
+                        Authorization: 'Bearer ' + token
                     },
                     error:function(xhr){
                         console.log("상태값 :" + xhr.status + " Http에러메시지 :"+xhr.message);
@@ -48,7 +52,7 @@
                     url: 'participant/' + id,
                     type: 'POST',
                     headers: {
-                        Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNjI2MzEzOTUyfQ.oYgIjEgauvxXBzIDfCet3VFf_WV50QoCISvPVNK0x0M'
+                        Authorization: 'Bearer ' + token
                     },
                     error: function (xhr) {
                         console.log("상태값 :" + xhr.status + " Http에러메시지 :" + xhr.message);
@@ -86,6 +90,30 @@
             starting_Point = data.starting_Point;
             console.log(destination);
             kakaoMap()
+        }
+
+        function participantList(){
+            $.ajax({
+                url:'participant/' + id,
+                type:'GET',
+                contentType:'application/json;charset=utf-8',
+                dataType:'json',
+                error:function(xhr){
+                    alert("상태값 :" + xhr.status + " Http에러메시지 :"+ xhr.message);
+                },
+                success:participationListResult
+            });
+        }
+
+        function participationListResult(xhr){
+            $("tbody").empty();
+            var data = xhr.data;
+            console.log(data);
+            $.each(xhr.data,function(idx,item) {
+                $('<tr>')
+                    .append($('<td>').html(item.nickname))
+                    .appendTo('tbody');
+            });
         }
 
         function kakaoMap() {
@@ -194,6 +222,16 @@
                 <dd id="now_participants"></dd>
 
                 <input type="button"  class="btn btn-primary" value="참여"  id="btnParticipate" />
+                <div class="container">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>참가자</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </dl>
         </form>
         <div class="btn-group">

@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService{
     public User getUserById() throws Exception{
         User selectUser = userMapper.getUserById(jwtUtil.getUserIdFromJWT(getTokenFromServlet()));
 
-        if("".equals(selectUser) || selectUser == null){
+        if(selectUser == null){
             throw new EntityNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
 
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService{
     public HashMap<String, String> login(User user) throws Exception {
         User selectUser = userMapper.getUserByEmail(user.getEmail());
 
-        if(("".equals(selectUser) || selectUser == null) || isDeleted(selectUser.getId())){
+        if(selectUser == null || isDeleted(selectUser.getId())){
             throw new UnauthorizedException(ErrorCode.INVALID_EMAIL);
         }
 
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService{
         Long id = jwtUtil.getUserIdFromJWT(getTokenFromServlet());
         User selectUser = userMapper.getUserById(id);
 
-        if(("".equals(selectUser) || selectUser == null) || isDeleted(selectUser.getId())){
+        if(selectUser == null || isDeleted(selectUser.getId())){
             throw new EntityNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
 

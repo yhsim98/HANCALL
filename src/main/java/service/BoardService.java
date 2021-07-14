@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface BoardService {
     Board createBoard(Board board) throws Exception;
-    Map getBoardList(int page);
+    Map getBoardList(Long page);
     Map getBoard(Long boardId) throws Exception;
     void updateBoard(Board board) throws Exception;
     Map searchBoard(String startingPoint, String destination) throws Exception;

@@ -19,6 +19,8 @@
 		init();
 	});
 
+	var token = localStorage.getItem("jwt");
+
 	//초기화
 	function init() {
 		//초기화 버튼 클릭
@@ -29,7 +31,7 @@
 		});
 	}//init
 
-	//사용자 등록 요청
+	//게시판 등록 요청
 	function boardInsert(){
 		//등록 버튼 클릭
 		$('#btnInsert').on('click',function(){
@@ -49,19 +51,15 @@
 					starting_Point: starting_Point, max_Participants : max_Participants}),
 				contentType: 'application/json',
 				headers: {
-					Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNjI2MzEzOTUyfQ.oYgIjEgauvxXBzIDfCet3VFf_WV50QoCISvPVNK0x0M'
+					Authorization: 'Bearer ' + token
 				},
-				success: function(response) {
-					if(response.result == true) {
-						boardList();
-					}
-				},
+				success: boardList,
 				error:function(xhr) {
 					alert(" status: "+ xhr.status+" er:"+ xhr.message);
 				}
 			});
 		});//등록 버튼 클릭
-	}//userInsert
+	}
 
 
 	//게시물 조회 요청
@@ -75,7 +73,7 @@
 	}
 
 
-	//사용자 목록 조회 요청
+	//게시판 목록 조회 요청
 	function boardList() {
 		$.ajax({
 			url:'board/',
@@ -90,9 +88,9 @@
 			},
 			success:boardListResult
 		});
-	}//userList
+	}
 	
-	//사용자 목록 조회 응답
+	//게시판 목록 조회 응답
 	function boardListResult(xhr) {
 		console.log(xhr.data);
 		$("tbody").empty();
@@ -106,11 +104,12 @@
 			.append($('<input type=\'hidden\' id=\'hidden_id\'>').val(item.board_Id))
 			.appendTo('tbody');
 		});//each
-	}//userListResult
+	}
 
 </script>
 </head>
 <body>
+<a href="User.html">로그인화면으로 이동</a>
 <div class="container">
 	<form id="form1"  class="form-horizontal">
 		<h2>게시글 등록</h2>
@@ -176,6 +175,7 @@
 
 </script>
 <hr/>
+<a href="boardSearch.html">검색화면으로 이동</a>
 <div class="container">
 	<h2>게시글 목록</h2>
 	<table class="table text-center">
