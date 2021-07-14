@@ -1,9 +1,11 @@
 package exception;
 
-public class ConflictException extends Exception{
+import exception.errorcode.ErrorCode;
 
-    public ConflictException(String message){
-        super(message);
+public class ConflictException extends BusinessException{
+
+    public ConflictException(ErrorCode errorCode){
+        super(errorCode);
     }
 
 }

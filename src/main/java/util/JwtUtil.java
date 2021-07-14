@@ -1,6 +1,7 @@
 package util;
 
 import exception.UnauthorizedException;
+import exception.errorcode.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -37,19 +38,19 @@ public class JwtUtil {
  
     public boolean isValid(String token) throws Exception{
         if ( token == null) {
-            throw new UnauthorizedException("토큰값이 존재하지 않습니다");
+            throw new UnauthorizedException("토큰값이 존재하지 않습니다", ErrorCode.INVALID_JWT);
         }
         else if ( !token.startsWith("Bearer ") ){
-            throw new UnauthorizedException("Bearer 로 시작하지 않습니다");
+            throw new UnauthorizedException("Bearer 로 시작하지 않습니다", ErrorCode.INVALID_JWT);
         }
         token = token.substring(7);
         try {
             Claims claims = Jwts.parser().setSigningKey(secret.getBytes()).parseClaimsJws(token).getBody();
         }catch (ExpiredJwtException e1){
-            throw new UnauthorizedException("로그인이 만료되었습니다");
+            throw new UnauthorizedException("로그인이 만료되었습니다", ErrorCode.INVALID_JWT);
         }
         catch(Throwable e2){
-            throw new UnauthorizedException("잘못된 토큰입니다");
+            throw new UnauthorizedException("잘못된 토큰입니다", ErrorCode.INVALID_JWT);
         }
         return true;
     }

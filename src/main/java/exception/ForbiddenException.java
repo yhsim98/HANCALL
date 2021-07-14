@@ -1,7 +1,9 @@
 package exception;
 
-public class ForbiddenException extends Exception{
-    public ForbiddenException(String message) {
-        super(message);
+import exception.errorcode.ErrorCode;
+
+public class ForbiddenException extends CustomException{
+    public ForbiddenException(ErrorCode errorCode) {
+        super(errorCode);
     }
 }

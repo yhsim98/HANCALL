@@ -2,8 +2,9 @@ package service;
 
 import domain.User;
 import exception.ConflictException;
-import exception.NotFoundException;
+import exception.EntityNotFoundException;
 import exception.UnauthorizedException;
+import exception.errorcode.ErrorCode;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,13 +33,13 @@ public class UserServiceImpl implements UserService{
         User selectUser = userMapper.getUserByEmail(user.getEmail());
 
         if(selectUser != null && !isDeleted(selectUser.getId())){
-            throw new ConflictException("이미 사용하고 있는 이메일입니다");
+            throw new ConflictException(ErrorCode.EMAIL_DUPLICATION);
         }
 
         selectUser = userMapper.getUserByNickname(user.getNickname());
         
         if(selectUser != null && !isDeleted(selectUser.getId())){
-            throw new ConflictException("이미 사용하고 있는 별명입니다");
+            throw new ConflictException(ErrorCode.NICKNAME_DUPLICATION);
         }
         
         user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(10)));
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService{
         User selectUser = userMapper.getUserById(jwtUtil.getUserIdFromJWT(getTokenFromServlet()));
 
         if("".equals(selectUser) || selectUser == null){
-            throw new NotFoundException("존재하지 않는 계정입니다");
+            throw new EntityNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
 
         return selectUser;
@@ -63,11 +64,11 @@ public class UserServiceImpl implements UserService{
         User selectUser = userMapper.getUserByEmail(user.getEmail());
 
         if(("".equals(selectUser) || selectUser == null) || isDeleted(selectUser.getId())){
-            throw new UnauthorizedException("존재하지 않는 계정입니다");
+            throw new UnauthorizedException(ErrorCode.INVALID_EMAIL);
         }
 
         if(!BCrypt.checkpw(user.getPassword(), selectUser.getPassword())){
-            throw new UnauthorizedException("비밀번호가 틀립니다");
+            throw new ConflictException(ErrorCode.INVALID_PASSWORD);
         }
 
         HashMap<String, String> hashMap = new HashMap<>();
@@ -80,8 +81,8 @@ public class UserServiceImpl implements UserService{
         Long id = jwtUtil.getUserIdFromJWT(getTokenFromServlet());
         User selectUser = userMapper.getUserById(id);
 
-        if(("".equals(selectUser) || selectUser == null) || isDeleted(selectUser.getId())){
-            throw new NotFoundException("존재하지 않는 계정입니다");
+        if(selectUser == null || isDeleted(selectUser.getId())){
+            throw new EntityNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
 
         user.setId(id);
@@ -97,7 +98,7 @@ public class UserServiceImpl implements UserService{
         User selectUser = userMapper.getUserById(id);
 
         if(("".equals(selectUser) || selectUser == null) || isDeleted(selectUser.getId())){
-            throw new NotFoundException("존재하지 않는 계정입니다");
+            throw new EntityNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
 
         userMapper.deleteUser(id);

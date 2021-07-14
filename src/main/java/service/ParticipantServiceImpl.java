@@ -2,8 +2,11 @@ package service;
 
 import domain.Participant;
 import exception.ConflictException;
+import exception.EntityNotFoundException;
+import exception.errorcode.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import repository.BoardMapper;
@@ -11,7 +14,9 @@ import repository.ParticipantMapper;
 import util.JwtUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ParticipantServiceImpl implements ParticipantService{
@@ -28,10 +33,13 @@ public class ParticipantServiceImpl implements ParticipantService{
     }
 
     @Override
-    public List<Participant> getParticipantsList(Long boardId) {
-        return participantMapper.getParticipantsList(boardId);
+    public Map getParticipantsList(Long boardId) {
+        Map result = new HashMap();
+        result.put("data", participantMapper.getParticipantsList(boardId));
+        return result;
     }
 
+    @Transactional
     @Override
     public void participate(Long boardId) throws Exception{
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -43,16 +51,17 @@ public class ParticipantServiceImpl implements ParticipantService{
         newParticipant.setBoard_Id(boardId);
 
         if(participantMapper.getParticipant(newParticipant) != null){
-            throw new ConflictException("이미 참가하였습니다");
+            throw new ConflictException(ErrorCode.ALREADY_PARTICIPATE);
         }
 
         if(countParticipants(boardId) >= boardMapper.getMaxParticipants(boardId)){
-            throw new ConflictException("참여가능한 최대 인원입니다");
+            throw new ConflictException(ErrorCode.ALREADY_FULL);
         }
 
         participantMapper.insertParticipant(newParticipant);
     }
 
+    @Transactional
     @Override
     public void cancel(Long boardId) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -62,6 +71,10 @@ public class ParticipantServiceImpl implements ParticipantService{
 
         participant.setUser_Id(jwtUtil.getUserIdFromJWT(token));
         participant.setBoard_Id(boardId);
+
+        if(participantMapper.getParticipant(participant) == null){
+            throw new EntityNotFoundException(ErrorCode.PARTICIPANT_NOT_FOUND);
+        }
 
         participantMapper.deleteParticipant(participant);
     }

@@ -1,9 +1,7 @@
 package service;
 
 import domain.Comment;
-import exception.NotFoundException;
 
-import java.util.List;
 import java.util.Map;
 
 public interface CommentService {

@@ -35,9 +35,7 @@
 		$('#btnInsert').on('click',function(){
 			var title = $('input:text[name="title"]').val();
 			var content = $('input:text[name="content"]').val();
-			console.log(starting_Point);
-			console.log(destination);
-			var max_Participants = $('input:text[name="max_Participants"]').val();
+			var max_Participants = $('select[name="max_Participants"]').val();
 			if(title == '' || content == '' || destination == null || starting_Point == null || max_Participants == ''){
 				alert("전부 입력해주세요");
 				return;
@@ -51,15 +49,15 @@
 					starting_Point: starting_Point, max_Participants : max_Participants}),
 				contentType: 'application/json',
 				headers: {
-					Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNjI2MDA1MzE2fQ.1EbkbjNF5Xqj-8K6VKdXYSQ6aPZmp6goyPWejuUBoeM'
+					Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNjI2MzEzOTUyfQ.oYgIjEgauvxXBzIDfCet3VFf_WV50QoCISvPVNK0x0M'
 				},
 				success: function(response) {
 					if(response.result == true) {
 						boardList();
 					}
 				},
-				error:function(xhr, status, message) {
-					alert(" status: "+status+" er:"+message);
+				error:function(xhr) {
+					alert(" status: "+ xhr.status+" er:"+ xhr.message);
 				}
 			});
 		});//등록 버튼 클릭
@@ -84,8 +82,11 @@
 			type:'GET',
 			contentType:'application/json;charset=utf-8',
 			dataType:'json',
-			error:function(xhr,status,msg){
-				alert("상태값 :" + status + " Http에러메시지 :"+msg);
+			data:{
+				p:1
+			},
+			error:function(xhr){
+				alert("상태값 :" + xhr.status + " Http에러메시지 :"+ xhr.message);
 			},
 			success:boardListResult
 		});
@@ -99,6 +100,7 @@
 			$('<tr>')
 			.append($('<td>').html(item.title))
 			.append($('<td>').html(item.nickname))
+					.append($('<td>').html(item.starting_Point))
 			.append($('<td>').html(item.destination))
 			.append($('<td>').html('<button id=\'btnSelect\'>조회</button>'))
 			.append($('<input type=\'hidden\' id=\'hidden_id\'>').val(item.board_Id))
@@ -132,7 +134,13 @@
 		</div>
 		<div class="form-group">
 			<label>최대인원:</label>
-			<input type="text"  class="form-control"  name="max_Participants" >
+			<select class="form-control" name="max_Participants">
+				<option value=1>1</option>
+				<option value=2>2</option>
+				<option value=3>3</option>
+				<option value=4>4</option>
+				<option value=5>5</option>
+			</select>
 		</div>
 		<div class="btn-group">
 			<input type="button"  class="btn btn-primary" value="초기화"  id="btnInit" />
@@ -175,6 +183,7 @@
 		<tr>
 			<th class="text-center">제목</th>
 			<th class="text-center">글쓴이</th>
+			<th class="test-center">출발지</th>
 			<th class="text-center">목적지</th>
 		</tr>
 		</thead>

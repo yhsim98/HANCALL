@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=26e577f41bb934567564e07fa054d3e4&libraries=services,clusterer,drawing"></script>
     <script type="text/javascript" >
         $(function(){
             boardDetail();
@@ -27,10 +28,10 @@
                     contentType:'application/json;charset=utf-8',
                     dataType:'json',
                     headers: {
-                        Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6NCwiZXhwIjoxNjI2MDEzMDE1fQ.uDkHYUA7RllFEiKiaN5qhCb316OLkoUyIa5ZxdkUjO4'
+                        Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNjI2MzEzOTUyfQ.oYgIjEgauvxXBzIDfCet3VFf_WV50QoCISvPVNK0x0M'
                     },
-                    error:function(xhr,status,msg){
-                        console.log("상태값 :" + status + " Http에러메시지 :"+msg);
+                    error:function(xhr){
+                        console.log("상태값 :" + xhr.status + " Http에러메시지 :"+xhr.message);
                     }, success:function() {
                         alert("삭제되었습니다");
                         location.href = "boardList_Json.html";
@@ -47,10 +48,10 @@
                     url: 'participant/' + id,
                     type: 'POST',
                     headers: {
-                        Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6NCwiZXhwIjoxNjI2MDEzMDE1fQ.uDkHYUA7RllFEiKiaN5qhCb316OLkoUyIa5ZxdkUjO4'
+                        Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNjI2MzEzOTUyfQ.oYgIjEgauvxXBzIDfCet3VFf_WV50QoCISvPVNK0x0M'
                     },
-                    error: function (xhr, status, msg) {
-                        console.log("상태값 :" + status + " Http에러메시지 :" + msg);
+                    error: function (xhr) {
+                        console.log("상태값 :" + xhr.status + " Http에러메시지 :" + xhr.message);
                     },
                     success: function(){
                         window.location.href = "boardDetail.html";
@@ -65,8 +66,8 @@
                 type:'GET',
                 contentType:'application/json;charset=utf-8',
                 dataType:'json',
-                error:function(xhr,status,msg){
-                    alert("상태값 :" + status + " Http에러메시지 :"+msg);
+                error:function(xhr){
+                    alert("상태값 :" + xhr.status + " Http에러메시지 :"+ xhr.message);
                 },
                 success:boardDetailResult
             });
@@ -84,6 +85,79 @@
             destination = data.destination;
             starting_Point = data.starting_Point;
             console.log(destination);
+            kakaoMap()
+        }
+
+        function kakaoMap() {
+            <!-- services와 clusterer, drawing 라이브러리 불러오기 -->
+            var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+                mapOption = {
+                    center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+                    level: 8 // 지도의 확대 레벨
+                };
+
+            // 지도를 생성합니다
+            var map = new kakao.maps.Map(mapContainer, mapOption);
+
+            // 주소-좌표 변환 객체를 생성합니다
+            var geocoder = new kakao.maps.services.Geocoder();
+
+            //출발지, 도착지 생성
+            // var destination = localStorage.getItem("destination");
+            // localStorage.removeItem("destination");
+            // var starting_Point = localStorage.getItem("starting_Point");
+            // localStorage.removeItem("starting_Point");
+
+
+            console.log(destination);
+            geocoder.addressSearch(starting_Point, function (result, status) {
+
+                // 정상적으로 검색이 완료됐으면
+                if (status === kakao.maps.services.Status.OK) {
+
+                    var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                    // 결과값으로 받은 위치를 마커로 표시합니다
+                    var marker = new kakao.maps.Marker({
+                        map: map,
+                        position: coords
+                    });
+
+                    // 인포윈도우로 장소에 대한 설명을 표시합니다
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: '<div style="width:150px;text-align:center;padding:6px 0;">출발지</div>'
+                    });
+                    infowindow.open(map, marker);
+
+                    // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                    map.setCenter(coords);
+                }
+            });
+
+            geocoder.addressSearch(destination, function (result, status) {
+
+                // 정상적으로 검색이 완료됐으면
+                if (status === kakao.maps.services.Status.OK) {
+
+                    var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                    // 결과값으로 받은 위치를 마커로 표시합니다
+                    var marker = new kakao.maps.Marker({
+                        map: map,
+                        position: coords
+                    });
+
+                    // 인포윈도우로 장소에 대한 설명을 표시합니다
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: '<div style="width:150px;text-align:center;padding:6px 0;">도착지</div>'
+                    });
+                    infowindow.open(map, marker);
+
+                    // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                    map.setCenter(coords);
+                }
+            });
+
         }
 
 
@@ -130,78 +204,7 @@
 
     <!-- 카카오 맵 -->
     <div id="map" style="width:500px;height:400px;"></div>
-    <!-- services와 clusterer, drawing 라이브러리 불러오기 -->
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=26e577f41bb934567564e07fa054d3e4&libraries=services,clusterer,drawing"></script>
-    <script>
-        var mapContainer = document.getElementById('map'), // 지도를 표시할 div
-            mapOption = {
-                center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-                level: 8 // 지도의 확대 레벨
-            };
 
-        // 지도를 생성합니다
-        var map = new kakao.maps.Map(mapContainer, mapOption);
-
-        // 주소-좌표 변환 객체를 생성합니다
-        var geocoder = new kakao.maps.services.Geocoder();
-
-        // 출발지, 도착지 생성
-        // var destination = localStorage.getItem("destination");
-        // localStorage.removeItem("destination");
-        // var starting_Point = localStorage.getItem("starting_Point");
-        // localStorage.removeItem("starting_Point");
-
-        console.log(destination);
-        geocoder.addressSearch(starting_Point, function(result, status) {
-
-            // 정상적으로 검색이 완료됐으면
-            if (status === kakao.maps.services.Status.OK) {
-
-                var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-
-                // 결과값으로 받은 위치를 마커로 표시합니다
-                var marker = new kakao.maps.Marker({
-                    map: map,
-                    position: coords
-                });
-
-                // 인포윈도우로 장소에 대한 설명을 표시합니다
-                var infowindow = new kakao.maps.InfoWindow({
-                    content: '<div style="width:150px;text-align:center;padding:6px 0;">출발지</div>'
-                });
-                infowindow.open(map, marker);
-
-                // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-                map.setCenter(coords);
-            }
-        });
-
-        geocoder.addressSearch(destination, function(result, status) {
-
-            // 정상적으로 검색이 완료됐으면
-            if (status === kakao.maps.services.Status.OK) {
-
-                var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-
-                // 결과값으로 받은 위치를 마커로 표시합니다
-                var marker = new kakao.maps.Marker({
-                    map: map,
-                    position: coords
-                });
-
-                // 인포윈도우로 장소에 대한 설명을 표시합니다
-                var infowindow = new kakao.maps.InfoWindow({
-                    content: '<div style="width:150px;text-align:center;padding:6px 0;">도착지</div>'
-                });
-                infowindow.open(map, marker);
-
-                // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-                map.setCenter(coords);
-            }
-        });
-
-
-    </script>
 
     <!--  댓글  -->
     <div class="container">

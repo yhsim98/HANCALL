@@ -2,7 +2,8 @@ package service;
 
 import domain.Comment;
 import exception.ForbiddenException;
-import exception.NotFoundException;
+import exception.EntityNotFoundException;
+import exception.errorcode.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -50,11 +51,11 @@ public class CommentServiceImpl implements CommentService{
         String token = getTokenFromServlet();
 
         if("".equals(selectComment) || selectComment == null){
-            throw new NotFoundException("존재하지 않는 댓글입니다");
+            throw new EntityNotFoundException(ErrorCode.COMMENT_NOT_FOUND);
         }
 
         if(!jwtUtil.getUserIdFromJWT(token).equals(selectComment.getWriter_Id())){
-            throw new ForbiddenException("권한이 없습니다");
+            throw new ForbiddenException(ErrorCode.ACCESS_DENIED);
         }
 
         commentMapper.deleteComment(commentId);
@@ -66,11 +67,11 @@ public class CommentServiceImpl implements CommentService{
         String token = getTokenFromServlet();
 
         if("".equals(selectComment) || selectComment == null){
-            throw new NotFoundException("존재하지 않는 댓글입니다");
+            throw new EntityNotFoundException(ErrorCode.COMMENT_NOT_FOUND);
         }
 
         if(!jwtUtil.getUserIdFromJWT(token).equals(selectComment.getWriter_Id())){
-            throw new ForbiddenException("권한이 없습니다");
+            throw new ForbiddenException(ErrorCode.ACCESS_DENIED);
         }
 
         comment.setComment_Id(commentId);

@@ -3,23 +3,28 @@ package exception.errorcode;
 public enum ErrorCode {
 
     // common
-    ACCESS_DENIED(402, "C001", "Access denied"),
+    INVALID_JWT(401, "C001", "jwt is invalid"),
+    ACCESS_DENIED(403, "C002", "no authorized"),
+    INVALID_INPUT_VALUE(400, "C003", " Invalid Input Value"),
 
     // User
-    USER_NOT_FOUND(404, "U001", "user not exist"),
-    EMAIL_DUPLICATION(400, "U002", "email is duplication"),
-    NICKNAME_DUPLICATION(400, "U003", "nickname is duplication"),
-    INVALID_EMAIL(401, "U004", "invalid email"),
-    INVALID_PASSWORD(401, "U005", "password not match"),
+    USER_NOT_FOUND(400, "C002", "user not found"),
+    EMAIL_DUPLICATION(409, "U001", "email is duplication"),
+    NICKNAME_DUPLICATION(409, "U002", "nickname is duplication"),
+    INVALID_EMAIL(403, "U003", "invalid email"),
+    INVALID_PASSWORD(403, "U004", "password not match"),
 
     // Board
-    BOARD_NOT_FOUND(404, "B001", "board not exist"),
+    Board_NOT_FOUND(400, "C002", "board not found"),
+    INVALID_MAX_PARTICIPANTS(400, "B002", "max participants value is too small"),
 
     // COMMENT
-    COMMENT_NOT_FOUND(404, "CTO01", "comment not exist"),
+    COMMENT_NOT_FOUND(400, "C002", "comment not found"),
 
     // Participant
-    ALREADY_PARTICIPATE(400, "P001", "already participate")
+    ALREADY_PARTICIPATE(409, "P001", "already participate"),
+    ALREADY_FULL(400, "P002", "already full"),
+    PARTICIPANT_NOT_FOUND(400, "P002", "participant not found")
     ;
     private final int status;
     private final String code;

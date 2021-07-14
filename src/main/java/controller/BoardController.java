@@ -9,8 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import service.BoardService;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -29,45 +27,26 @@ public class BoardController {
     @Auth
     @ResponseBody
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<Map> createBoard(@RequestBody Board board) throws Exception {
-        Board created = boardService.createBoard(board);
-
-        Map result = new HashMap();
-
-        result.put("data", created);
-        result.put("result", Boolean.TRUE);
-
-        return new ResponseEntity(result, HttpStatus.CREATED);
+    public ResponseEntity<Board> createBoard(@RequestBody Board board) throws Exception {
+        return new ResponseEntity(boardService.createBoard(board), HttpStatus.CREATED);
     }
 
 
     //게시물 목록 조회
     @ResponseBody
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<Map> getBoardList() throws Exception {
-
-        List<Board> boardList = boardService.getBoardList();
-
-        Map result = new HashMap();
-
-        result.put("data", boardList);
-
-        return new ResponseEntity(result, HttpStatus.OK);
+    public ResponseEntity<Map> getBoardList(@ModelAttribute("p") int page) throws Exception {
+        return new ResponseEntity(boardService.getBoardList(page), HttpStatus.OK);
     }
 
     //게시글 검색
     @ResponseBody
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public ResponseEntity<Map> searchBoard(@RequestParam(value="startingPoint", required = false) String startingPoint,
-                                           @RequestParam(value="destination", required = false) String destination) throws Exception {
+                                           @RequestParam(value="destination", required = false) String destination,
+                                           @ModelAttribute("p") Long page) throws Exception {
 
-        List<Board> searchList = boardService.searchBoard(startingPoint, destination);
-
-        Map result = new HashMap();
-
-        result.put("data", searchList);
-
-        return new ResponseEntity(result, HttpStatus.OK);
+        return new ResponseEntity(boardService.searchBoard(startingPoint, destination), HttpStatus.OK);
     }
 
 
@@ -75,24 +54,15 @@ public class BoardController {
     @ResponseBody
     @RequestMapping(value = "/{boardId}", method = RequestMethod.GET)
     public ResponseEntity<Map> readBoard(@PathVariable("boardId") Long boardId) throws Exception {
-        Board selectBoard = boardService.getBoard(boardId);
-
-        Map result = new HashMap();
-
-        result.put("data", selectBoard);
-
-        return new ResponseEntity(result, HttpStatus.OK);
+        return new ResponseEntity(boardService.getBoard(boardId), HttpStatus.OK);
     }
 
     //게시글 수정
     @Auth
     @ResponseBody
     @RequestMapping(value = "/{boardId}", method = RequestMethod.PATCH)
-    public ResponseEntity updateBoard(
-            @PathVariable("boardId") Long boardId,
-            @RequestBody Board board) throws Exception {
-
-        boardService.updateBoard(board, boardId);
+    public ResponseEntity updateBoard(@RequestBody Board board) throws Exception {
+        boardService.updateBoard(board);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 

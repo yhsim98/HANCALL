@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import service.ParticipantService;
 
+import java.util.Map;
+
 @Controller
 @RequestMapping(value="/participant")
 public class ParticipantController {
@@ -25,7 +27,7 @@ public class ParticipantController {
     //참가자 조회
     @ResponseBody
     @RequestMapping(value="/{boardId}", method = RequestMethod.GET)
-    public ResponseEntity getParticipantsList(@PathVariable("boardId") Long boardId){
+    public ResponseEntity<Map> getParticipantsList(@PathVariable("boardId") Long boardId){
         return new ResponseEntity(participantService.getParticipantsList(boardId), HttpStatus.OK);
     }
 

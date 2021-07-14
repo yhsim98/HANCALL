@@ -1,10 +1,14 @@
 package exception;
 
-public class UnauthorizedException extends Exception{
+import exception.errorcode.ErrorCode;
 
-    public UnauthorizedException(String message){
-        super(message);
+public class UnauthorizedException extends CustomException{
+
+    public UnauthorizedException(ErrorCode errorCode){
+        super(errorCode);
     }
 
-
+    public UnauthorizedException(String message, ErrorCode errorCode) {
+        super(message, errorCode);
+    }
 }

@@ -4,7 +4,8 @@ package service;
 import domain.Board;
 import exception.ConflictException;
 import exception.ForbiddenException;
-import exception.NotFoundException;
+import exception.EntityNotFoundException;
+import exception.errorcode.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -13,7 +14,9 @@ import repository.BoardMapper;
 import util.JwtUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -23,6 +26,9 @@ public class BoardServiceImpl implements BoardService{
     private final CommentService commentService;
     private final ParticipantService participantService;
     private final JwtUtil jwtUtil;
+
+    private static Long boardNum = 0L;
+    private final static int pageSize = 10;
 
     @Autowired
     public BoardServiceImpl(BoardMapper boardMapper, CommentService commentService, ParticipantService participantService, JwtUtil jwtUtil) {
@@ -34,13 +40,6 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public Board createBoard(Board board) throws Exception {
-        if(board.getContent() == null){
-            System.out.println("이거 null");
-            throw new ConflictException("이거 null");
-        }
-        if("".equals(board.getContent())){
-            throw new ConflictException("다 입력해주라");
-        }
         String token = getTokenFromServlet();
         board.setWriter_Id(jwtUtil.getUserIdFromJWT(token));
         boardMapper.insertBoard(board);
@@ -50,57 +49,65 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public List<Board> getBoardList() {
-        return boardMapper.getBoardList();
+    public Map getBoardList(int page) {
+
+
+        Map result = new HashMap();
+        result.put("data", boardMapper.getBoardList());
+        return result;
     }
 
 
     @Override
-    public Board getBoard(Long boardId) throws Exception{
+    public Map getBoard(Long boardId) throws Exception{
         Board selectBoard = boardMapper.getBoardById(boardId);
 
         if(selectBoard == null){
-            throw new NotFoundException("존재하지 않는 게시물입니다");
+            throw new EntityNotFoundException(ErrorCode.Board_NOT_FOUND);
         }
 
         selectBoard = boardMapper.getBoardById(boardId);
         selectBoard.setNow_Participants(participantService.countParticipants(boardId));
-        return selectBoard;
+
+        Map result = new HashMap();
+        result.put("data", selectBoard);
+        return result;
     }
 
 
     @Override
-    public void updateBoard(Board board, Long boardId) throws Exception{
-        Board selectBoard = boardMapper.getBoardById(boardId);
+    public void updateBoard(Board board) throws Exception{
+        Board selectBoard = boardMapper.getBoardById(board.getBoard_Id());
         String token = getTokenFromServlet();
 
         if(selectBoard == null){
-            throw new NotFoundException("존재하지 않는 게시물입니다");
+            throw new EntityNotFoundException(ErrorCode.Board_NOT_FOUND);
         }
 
         if(!jwtUtil.getUserIdFromJWT(token).equals(selectBoard.getWriter_Id())){
-            throw new ForbiddenException("권한이 없습니다");
+            throw new ForbiddenException(ErrorCode.ACCESS_DENIED);
         }
 
-        if(participantService.countParticipants(boardId) > board.getMax_Participants()){
-            throw new ConflictException("현재 참여인원보다 적습니다");
+        if(participantService.countParticipants(board.getBoard_Id()) > board.getMax_Participants()){
+            throw new ConflictException(ErrorCode.INVALID_MAX_PARTICIPANTS);
         }
 
-        board.setBoard_Id(boardId);
         boardMapper.updateBoard(board);
     }
 
     @Override
-    public List<Board> searchBoard(String startingPoint, String destination) throws Exception {
+    public Map searchBoard(String startingPoint, String destination) throws Exception {
         Board board = new Board();
 
         if(startingPoint == null && destination == null)
-            throw new ConflictException("둘 중 하나는 입력해야 합니다");
+            throw new ConflictException(ErrorCode.INVALID_INPUT_VALUE);
 
         board.setStarting_Point(startingPoint);
         board.setDestination(destination);
 
-        return boardMapper.searchBoard(board);
+        Map result = new HashMap();
+        result.put("data", boardMapper.searchBoard(board));
+        return result;
     }
 
     @Override
@@ -109,11 +116,11 @@ public class BoardServiceImpl implements BoardService{
         String token = getTokenFromServlet();
 
         if(selectBoard == null){
-            throw new NotFoundException("존재하지 않는 게시물입니다");
+            throw new EntityNotFoundException(ErrorCode.Board_NOT_FOUND);
         }
 
         if(!jwtUtil.getUserIdFromJWT(token).equals(selectBoard.getWriter_Id())){
-            throw new ForbiddenException("권한이 없습니다");
+            throw new ForbiddenException(ErrorCode.ACCESS_DENIED);
         }
 
         participantService.deleteAllParticipantInBoard(boardId);
