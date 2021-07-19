@@ -8,6 +8,8 @@ import exception.EntityNotFoundException;
 import exception.errorcode.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import repository.BoardMapper;
@@ -77,7 +79,8 @@ public class BoardServiceImpl implements BoardService{
 
 
     @Override
-    public void updateBoard(Board board) throws Exception{
+    public void updateBoard(Board board, Long boardId) throws Exception{
+        board.setBoard_Id(boardId);
         Board selectBoard = boardMapper.getBoardById(board.getBoard_Id());
         String token = getTokenFromServlet();
 
@@ -111,6 +114,7 @@ public class BoardServiceImpl implements BoardService{
         return result;
     }
 
+    @Transactional
     @Override
     public void deleteBoard(Long boardId) throws Exception{
         Board selectBoard = boardMapper.getBoardById(boardId);

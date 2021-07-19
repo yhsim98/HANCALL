@@ -31,11 +31,10 @@ public class BoardController {
         return new ResponseEntity(boardService.createBoard(board), HttpStatus.CREATED);
     }
 
-
     //게시물 목록 조회
     @ResponseBody
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<Map> getBoardList(@ModelAttribute("p") Long page) throws Exception {
+    public ResponseEntity<Map> getBoardList(@RequestParam("p") Long page) throws Exception {
         return new ResponseEntity(boardService.getBoardList(page), HttpStatus.OK);
     }
 
@@ -44,7 +43,7 @@ public class BoardController {
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public ResponseEntity<Map> searchBoard(@RequestParam(value="startingPoint", required = false) String startingPoint,
                                            @RequestParam(value="destination", required = false) String destination,
-                                           @ModelAttribute("p") Long page) throws Exception {
+                                           @RequestParam("p") Long page) throws Exception {
 
         return new ResponseEntity(boardService.searchBoard(startingPoint, destination), HttpStatus.OK);
     }
@@ -61,8 +60,9 @@ public class BoardController {
     @Auth
     @ResponseBody
     @RequestMapping(value = "/{boardId}", method = RequestMethod.PATCH)
-    public ResponseEntity updateBoard(@RequestBody Board board) throws Exception {
-        boardService.updateBoard(board);
+    public ResponseEntity updateBoard(@RequestBody Board board,
+                                      @PathVariable Long boardId) throws Exception {
+        boardService.updateBoard(board, boardId);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
