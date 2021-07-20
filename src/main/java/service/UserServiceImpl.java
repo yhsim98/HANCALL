@@ -30,15 +30,12 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User userRegister(User user) throws Exception{
-        User selectUser = userMapper.getUserByEmail(user.getEmail());
 
-        if(selectUser != null && !isDeleted(selectUser.getId())){
+        if(userMapper.checkEmail(user.getEmail()) == 1){
             throw new ConflictException(ErrorCode.EMAIL_DUPLICATION);
         }
-
-        selectUser = userMapper.getUserByNickname(user.getNickname());
         
-        if(selectUser != null && !isDeleted(selectUser.getId())){
+        if(userMapper.checkNickname(user.getNickname()) == 1){
             throw new ConflictException(ErrorCode.NICKNAME_DUPLICATION);
         }
         
@@ -60,10 +57,10 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public HashMap<String, String> login(User user) throws Exception {
-        User selectUser = userMapper.getUserByEmail(user.getEmail());
+    public HashMap login(User user) throws Exception {
+        User selectUser = userMapper.login(user);
 
-        if(selectUser == null || isDeleted(selectUser.getId())){
+        if(selectUser == null){
             throw new UnauthorizedException(ErrorCode.INVALID_EMAIL);
         }
 
@@ -71,7 +68,7 @@ public class UserServiceImpl implements UserService{
             throw new ConflictException(ErrorCode.INVALID_PASSWORD);
         }
 
-        HashMap<String, String> hashMap = new HashMap<>();
+        HashMap hashMap = new HashMap<>();
         hashMap.put("token", jwtUtil.genJsonWebToken(selectUser.getId()));
         return hashMap;
     }

@@ -5,7 +5,11 @@
 
 <mapper namespace="repository.UserMapper">
 
-    <select id="getUserByEmail" resultType="domain.User" parameterType="String">
+    <select id="checkEmail" resultType="Integer" parameterType="String">
+        SELECT count(*) FROM user WHERE email=#{email} AND deleted=0
+    </select>
+
+    <select id="login" resultType="domain.User" parameterType="String">
         SELECT id, email, password FROM user WHERE email=#{email} AND deleted=0
     </select>
 
@@ -17,8 +21,8 @@
         SELECT deleted FROM user WHERE id=#{id}
     </select>
 
-    <select id="getUserByNickname" parameterType="String" resultType="domain.User">
-        SELECT * FROM user WHERE nickname=#{nickname}
+    <select id="checkNickname" parameterType="String" resultType="Integer">
+        SELECT count(*) FROM user WHERE nickname=#{nickname} AND deleted=0
     </select>
 
     <insert id="insertUser" parameterType="domain.User">
