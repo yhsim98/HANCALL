@@ -1,52 +1,96 @@
 package domain;
 
 public class PageMaker {
-    private final Long pageSize;
-    private Long totalPage;
-    private Long startPage;
-    private Long endPage;
-    private Long page;
-    private Long pageScale;
 
-    public PageMaker() {
-        this.pageSize = 10L;
-        this.startPage = 1L;
-        this.pageScale = 5L;
+    private Criteria cri;
+
+    // 총 게시글 수
+    private int totalBoardCount;
+    // 화면에 보여질 첫 페이지 번호
+    private int startPage;
+    // 화면에 보여질 마지막 페이지 번호
+    private int endPage;
+    // 화면에 prev 존재 여부
+    private boolean prev;
+    // 화면에 next 존재 여부
+    private boolean next;
+    // 한 화면에 보여줄 페이지 개수
+    private int displayPageNum = 5;
+
+    public PageMaker(Criteria cri, int totalBoardCount) {
+        this.cri = cri;
+        this.totalBoardCount = totalBoardCount;
+        calcData();
     }
 
-    public Long getPageSize() {
-        return pageSize;
+    public PageMaker() {}
+
+    private void calcData(){
+        this.endPage = (int) (Math.ceil(cri.getPage() / (double) displayPageNum) * displayPageNum);
+        this.startPage = (endPage - displayPageNum) + 1;
+
+        if(startPage <= 0) startPage = 1;
+
+        // 끝 페이지가 실제 게시물 개수에 따른 끝 페이지보다 많을 경우
+        int tempEndPage = (int)(Math.ceil(totalBoardCount / (double) cri.getPerPageNum()));
+        if(endPage > tempEndPage){
+            endPage = tempEndPage;
+        }
+
+        prev = startPage == 1 ? false : true;
+        next = endPage * cri.getPerPageNum() < totalBoardCount ? true : false;
     }
 
-    public Long getTotalPage() {
-        return totalPage;
+    public Criteria getCri() {
+        return cri;
     }
 
-    public void setTotalPage(Long totalPage) {
-        this.totalPage = totalPage;
+    public void setCri(Criteria cri) {
+        this.cri = cri;
     }
 
-    public Long getStartPage() {
+    public int getTotalBoardCount() {
+        return totalBoardCount;
+    }
+
+    public void setTotalBoardCount(int totalBoardCount) {
+        this.totalBoardCount = totalBoardCount;
+        calcData();
+    }
+
+    public int getStartPage() {
         return startPage;
     }
 
-    public void setStartPage(Long startPage) {
+    public void setStartPage(int startPage) {
         this.startPage = startPage;
     }
 
-    public Long getEndPage() {
+    public int getEndPage() {
         return endPage;
     }
 
-    public void setEndPage(Long endPage) {
+    public void setEndPage(int endPage) {
         this.endPage = endPage;
     }
 
-    public Long getPage() {
-        return page;
+    public boolean isPrev() {
+        return prev;
     }
 
-    public void setPage(Long page) {
-        this.page = page;
+    public void setPrev(boolean prev) {
+        this.prev = prev;
+    }
+
+    public boolean isNext() {
+        return next;
+    }
+
+    public void setNext(boolean next) {
+        this.next = next;
+    }
+
+    public int getDisplayPageNum() {
+        return displayPageNum;
     }
 }

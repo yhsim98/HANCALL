@@ -13,12 +13,13 @@
         </selectKey>
     </insert>
 
-    <select id="getBoardList" resultType="domain.Board" parameterType="Long">
+    <select id="getBoardList" resultType="domain.Board" parameterType="domain.Criteria">
         SELECT board_id, starting_point, destination, title, update_date, user.nickname, max_participants
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
+        WHERE board.deleted=0
         ORDER BY board_id DESC
-        LIMIT #{start}, #{pageSize}
+        LIMIT #{pageStart}, #{perPageNum}
     </select>
 
     <select id="getBoardById" resultType="domain.Board" parameterType="Long">
@@ -26,26 +27,33 @@
                update_date, title, content, user.nickname, max_participants
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
-        WHERE board_id=#{boardId}
+        WHERE board_id=#{boardId} AND board.deleted=0
     </select>
 
-    <select id="searchBoard" parameterType="domain.Board" resultType="domain.Board">
+    <select id="searchBoard" parameterType="HashMap" resultType="domain.Board">
         SELECT board_id, starting_point, destination, created_date, update_date, title,
                content, user.nickname, max_participants
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
         <where>
+            board.deleted=0
             <if test="destination != null">
-                destination=#{destination}
+                AND destination=#{destination}
             </if>
             <if test="starting_Point != null">
                 AND starting_point=#{starting_Point}
             </if>
         </where>
+        ORDER BY board_id DESC
+        LIMIT #{pageStart}, #{perPageNum}
     </select>
 
     <select id="getMaxParticipants" parameterType="Long" resultType="Integer">
         SELECT max_participants FROM board WHERE board_id=#{boardId}
+    </select>
+
+    <select id="countBoardNum" resultType="Integer">
+        SELECT count(*) FROM board WHERE deleted=0
     </select>
 
     <update id="updateBoard" parameterType="domain.Board" >
@@ -60,7 +68,10 @@
         WHERE board_id=#{board_Id}
     </update>
 
-    <delete id="deleteBoard" parameterType="Long">
-        DELETE FROM board where board_id=#{boardId}
-    </delete>
+    <update id="deleteBoard" parameterType="Long">
+        UPDATE board
+        SET
+            deleted=1
+        WHERE board_id=#{board_id}
+    </update>
 </mapper>

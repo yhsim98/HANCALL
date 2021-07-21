@@ -2,6 +2,8 @@ package service;
 
 
 import domain.Board;
+import domain.Criteria;
+import domain.PageMaker;
 import exception.ConflictException;
 import exception.ForbiddenException;
 import exception.EntityNotFoundException;
@@ -25,37 +27,46 @@ public class BoardServiceImpl implements BoardService{
     private final BoardMapper boardMapper;
     private final CommentService commentService;
     private final ParticipantService participantService;
+    private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    private static Long pageNum = 0L;
-    private final static Long pageSize = 10L;
 
     @Autowired
-    public BoardServiceImpl(BoardMapper boardMapper, CommentService commentService, ParticipantService participantService, JwtUtil jwtUtil) {
+    public BoardServiceImpl(BoardMapper boardMapper, CommentService commentService, ParticipantService participantService,
+                            UserService userService, JwtUtil jwtUtil) {
+
         this.boardMapper = boardMapper;
         this.commentService = commentService;
         this.participantService = participantService;
+        this.userService = userService;
         this.jwtUtil = jwtUtil;
     }
 
+
     @Override
+    @Transactional
     public Board createBoard(Board board) throws Exception {
         String token = getTokenFromServlet();
         board.setWriter_Id(jwtUtil.getUserIdFromJWT(token));
-        boardMapper.insertBoard(board);
 
+        if(userService.isDeleted(board.getWriter_Id())){
+            throw new EntityNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        boardMapper.insertBoard(board);
         participantService.participate(board.getBoard_Id());
-        pageNum++;
+
         return boardMapper.getBoardById(board.getBoard_Id());
     }
 
     @Override
-    public Map getBoardList(Long page) {
-        if(page <= 0) page = 1L;
-        Long start = (page - 1) * pageSize;
+    public Map getBoardList(Criteria criteria) {
+        PageMaker pageMaker = new PageMaker(criteria, boardMapper.countBoardNum());
 
         Map result = new HashMap();
-        result.put("data", boardMapper.getBoardList(start, pageSize));
+        result.put("data", boardMapper.getBoardList(criteria));
+        result.put("pageMaker", pageMaker);
+
         return result;
     }
 
@@ -99,17 +110,23 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public Map searchBoard(String startingPoint, String destination) throws Exception {
-        Board board = new Board();
+    public Map searchBoard(String startingPoint, String destination, Criteria criteria) throws Exception {
 
         if(startingPoint == null && destination == null)
             throw new ConflictException(ErrorCode.INVALID_INPUT_VALUE);
 
-        board.setStarting_Point(startingPoint);
-        board.setDestination(destination);
+        HashMap hashMap = new HashMap();
+        hashMap.put("starting_Point", startingPoint);
+        hashMap.put("destination", destination);
+        hashMap.put("pageStart", criteria.getPageStart());
+        hashMap.put("perPageNum", criteria.getPerPageNum());
+
+        PageMaker pageMaker = new PageMaker(criteria, boardMapper.countBoardNum());
 
         Map result = new HashMap();
-        result.put("data", boardMapper.searchBoard(board));
+        result.put("data", boardMapper.searchBoard(hashMap));
+        result.put("pageMaker", pageMaker);
+
         return result;
     }
 

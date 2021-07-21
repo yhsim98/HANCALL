@@ -2,6 +2,7 @@ package controller;
 
 import annotation.Auth;
 import domain.Board;
+import domain.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +35,8 @@ public class BoardController {
     //게시물 목록 조회
     @ResponseBody
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<Map> getBoardList(@RequestParam("p") Long page) throws Exception {
-        return new ResponseEntity(boardService.getBoardList(page), HttpStatus.OK);
+    public ResponseEntity<Map> getBoardList(@ModelAttribute Criteria criteria) throws Exception {
+        return new ResponseEntity(boardService.getBoardList(criteria), HttpStatus.OK);
     }
 
     //게시글 검색
@@ -43,9 +44,9 @@ public class BoardController {
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public ResponseEntity<Map> searchBoard(@RequestParam(value="startingPoint", required = false) String startingPoint,
                                            @RequestParam(value="destination", required = false) String destination,
-                                           @RequestParam("p") Long page) throws Exception {
+                                           @ModelAttribute Criteria criteria) throws Exception {
 
-        return new ResponseEntity(boardService.searchBoard(startingPoint, destination), HttpStatus.OK);
+        return new ResponseEntity(boardService.searchBoard(startingPoint, destination, criteria), HttpStatus.OK);
     }
 
 

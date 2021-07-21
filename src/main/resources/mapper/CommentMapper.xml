@@ -8,11 +8,11 @@
         SELECT comment_id, writer_id, board_id, content, created_date, update_date, user.nickname
         FROM comment
             LEFT JOIN user ON comment.writer_id=user.id
-        WHERE board_id=#{boardId}
+        WHERE board_id=#{boardId} AND comment.deleted=0
     </select>
 
     <select id="getCommentById" resultType="domain.Comment" parameterType="Long">
-        SELECT * FROM comment WHERE comment_id=#{commentId}
+        SELECT * FROM comment WHERE comment_id=#{commentId} AND deleted=0
     </select>
 
     <insert parameterType="domain.Comment" id="insertComment">
@@ -29,11 +29,17 @@
     </update>
 
     <delete parameterType="Long" id="deleteComment">
-        DELETE FROM comment WHERE comment_id=#{commentId}
+        UPDATE comment
+        SET
+            deleted=1
+        WHERE comment_id=#{comment_id}
     </delete>
 
     <delete parameterType="Long" id="deleteAllCommentsInBoard">
-        DELETE FROM comment WHERE board_id=#{boardId}
+        UPDATE comment
+        SET
+            deleted=1
+        WHERE board_id=#{boardId} AND comment.deleted=0
     </delete>
 
 </mapper>

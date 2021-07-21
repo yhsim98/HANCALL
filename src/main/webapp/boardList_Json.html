@@ -44,7 +44,7 @@
 			}
 
 			$.ajax({
-				url: "board/",
+				url: "board",
 				type: 'POST',
 				dataType: 'json',
 				data: JSON.stringify({ title:title,content: content, destination : destination,
@@ -76,12 +76,12 @@
 	//게시판 목록 조회 요청
 	function boardList() {
 		$.ajax({
-			url:'board/',
+			url:'board',
 			type:'GET',
 			contentType:'application/json;charset=utf-8',
 			dataType:'json',
 			data:{
-				p:1
+				page:1
 			},
 			error:function(xhr){
 				alert("상태값 :" + xhr.status + " Http에러메시지 :"+ xhr.message);
@@ -104,6 +104,8 @@
 			.append($('<input type=\'hidden\' id=\'hidden_id\'>').val(item.board_Id))
 			.appendTo('tbody');
 		});//each
+
+		var pageMaker = xhr.pageMaker;
 	}
 
 </script>
@@ -189,6 +191,7 @@
 		</thead>
 		<tbody></tbody>
 	</table>
+
 </div>
 </body>
 </html>
