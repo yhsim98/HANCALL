@@ -1,11 +1,23 @@
 package domain;
 
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+
 public class User {
     private Long id;
+    @NotNull
+    @Email
     private String email;
+    @NotNull
     private String password;
+    @NotNull
+    @Length(min=2, max=5)
     private String name;
+    @NotNull
     private String nickname;
+    @NotNull
     private String phone;
     private String join_date;
 

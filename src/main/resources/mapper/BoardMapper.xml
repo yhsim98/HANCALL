@@ -30,7 +30,7 @@
         WHERE board_id=#{boardId} AND board.deleted=0
     </select>
 
-    <select id="searchBoard" parameterType="HashMap" resultType="domain.Board">
+    <select id="searchBoard" parameterType="Map" resultType="domain.Board">
         SELECT board_id, starting_point, destination, created_date, update_date, title,
                content, user.nickname, max_participants
         FROM board

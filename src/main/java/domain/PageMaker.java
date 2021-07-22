@@ -5,7 +5,7 @@ public class PageMaker {
     private Criteria cri;
 
     // 총 게시글 수
-    private int totalBoardCount;
+    private int totalCount;
     // 화면에 보여질 첫 페이지 번호
     private int startPage;
     // 화면에 보여질 마지막 페이지 번호
@@ -19,7 +19,7 @@ public class PageMaker {
 
     public PageMaker(Criteria cri, int totalBoardCount) {
         this.cri = cri;
-        this.totalBoardCount = totalBoardCount;
+        this.totalCount = totalBoardCount;
         calcData();
     }
 
@@ -32,13 +32,13 @@ public class PageMaker {
         if(startPage <= 0) startPage = 1;
 
         // 끝 페이지가 실제 게시물 개수에 따른 끝 페이지보다 많을 경우
-        int tempEndPage = (int)(Math.ceil(totalBoardCount / (double) cri.getPerPageNum()));
+        int tempEndPage = (int)(Math.ceil(totalCount / (double) cri.getPerPageNum()));
         if(endPage > tempEndPage){
             endPage = tempEndPage;
         }
 
         prev = startPage == 1 ? false : true;
-        next = endPage * cri.getPerPageNum() < totalBoardCount ? true : false;
+        next = endPage * cri.getPerPageNum() < totalCount ? true : false;
     }
 
     public Criteria getCri() {
@@ -49,12 +49,12 @@ public class PageMaker {
         this.cri = cri;
     }
 
-    public int getTotalBoardCount() {
-        return totalBoardCount;
+    public int getTotalCount() {
+        return totalCount;
     }
 
-    public void setTotalBoardCount(int totalBoardCount) {
-        this.totalBoardCount = totalBoardCount;
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
         calcData();
     }
 

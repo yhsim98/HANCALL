@@ -6,8 +6,8 @@ import domain.Participant;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface BoardMapper {
@@ -15,7 +15,7 @@ public interface BoardMapper {
     List<Board> getBoardList(Criteria criteria);
     Board getBoardById(Long boardId);
     void updateBoard(Board board);
-    List<Board> searchBoard(HashMap hashMap);
+    List<Board> searchBoard(Map map);
     void deleteBoard(Long boardId);
     int getMaxParticipants(Long boardId);
     int countBoardNum();

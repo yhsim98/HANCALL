@@ -1,6 +1,8 @@
 package service;
 
 import domain.Comment;
+import domain.Criteria;
+import domain.PageMaker;
 import exception.ForbiddenException;
 import exception.EntityNotFoundException;
 import exception.errorcode.ErrorCode;
@@ -29,9 +31,19 @@ public class CommentServiceImpl implements CommentService{
 
 
     @Override
-    public Map getCommentList(Long boardId) {
+    public Map getCommentList(Long boardId, Criteria criteria) {
+
+        PageMaker pageMaker = new PageMaker(criteria, commentMapper.countCommentNum(boardId));
+
+        Map map = new HashMap();
+        map.put("boardId", boardId);
+        map.put("pageStart", criteria.getPageStart());
+        map.put("perPageNum", criteria.getPerPageNum());
+
         Map result = new HashMap();
-        result.put("data", commentMapper.getCommentList(boardId));
+        result.put("pageMaker", pageMaker);
+        result.put("data", commentMapper.getCommentList(map));
+
         return result;
     }
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import service.UserService;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 @Controller
@@ -26,7 +27,7 @@ public class UserController {
     //유저 생성
     @RequestMapping(value="", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<User> register(@RequestBody User user) throws Exception {
+    public ResponseEntity<User> register(@Valid @RequestBody User user) throws Exception {
         User created = userService.userRegister(user);
 
         return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -51,7 +52,7 @@ public class UserController {
     @Auth
     @ResponseBody
     @RequestMapping(value="/my", method = RequestMethod.PATCH)
-    public ResponseEntity<User> updateUser(@RequestBody User user) throws Exception{
+    public ResponseEntity<User> updateUser(@Valid @RequestBody User user) throws Exception{
         return new ResponseEntity(userService.updateUser(user), HttpStatus.CREATED);
     }
 

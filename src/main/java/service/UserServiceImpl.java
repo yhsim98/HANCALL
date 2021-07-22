@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService{
         Long id = jwtUtil.getUserIdFromJWT(getTokenFromServlet());
         User selectUser = userMapper.getUserById(id);
 
-        if(selectUser == null || isDeleted(selectUser.getId())){
+        if(selectUser == null){
             throw new EntityNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
 
@@ -94,11 +94,12 @@ public class UserServiceImpl implements UserService{
         Long id = jwtUtil.getUserIdFromJWT(getTokenFromServlet());
         User selectUser = userMapper.getUserById(id);
 
-        if(selectUser == null || isDeleted(selectUser.getId())){
+        if(selectUser == null){
             throw new EntityNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
 
-        userMapper.deleteUser(id);
+        selectUser.setEmail(Long.toString(id) + "@deleted.user");
+        userMapper.deleteUser(selectUser);
     }
 
     @Override

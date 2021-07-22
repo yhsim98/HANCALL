@@ -14,7 +14,7 @@
     </select>
 
     <select id="getUserById" parameterType="Long" resultType="domain.User">
-        SELECT id, email, name, nickname, phone, join_date FROM user WHERE id=#{id}
+        SELECT id, email, name, nickname, phone, join_date FROM user WHERE id=#{id} AND deleted=0
     </select>
 
     <select id="isDeleted" parameterType="Long" resultType="Integer">
@@ -41,10 +41,11 @@
         WHERE id=#{id}
     </update>
 
-    <update id="deleteUser" parameterType="Long">
+    <update id="deleteUser" parameterType="domain.User">
         UPDATE user
         SET
-          deleted=1
+            email=#{email}
+            deleted=1
         WHERE id=#{id}
     </update>
 

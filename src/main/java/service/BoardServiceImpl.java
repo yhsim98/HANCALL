@@ -115,16 +115,16 @@ public class BoardServiceImpl implements BoardService{
         if(startingPoint == null && destination == null)
             throw new ConflictException(ErrorCode.INVALID_INPUT_VALUE);
 
-        HashMap hashMap = new HashMap();
-        hashMap.put("starting_Point", startingPoint);
-        hashMap.put("destination", destination);
-        hashMap.put("pageStart", criteria.getPageStart());
-        hashMap.put("perPageNum", criteria.getPerPageNum());
+        Map map = new HashMap();
+        map.put("starting_Point", startingPoint);
+        map.put("destination", destination);
+        map.put("pageStart", criteria.getPageStart());
+        map.put("perPageNum", criteria.getPerPageNum());
 
         PageMaker pageMaker = new PageMaker(criteria, boardMapper.countBoardNum());
 
         Map result = new HashMap();
-        result.put("data", boardMapper.searchBoard(hashMap));
+        result.put("data", boardMapper.searchBoard(map));
         result.put("pageMaker", pageMaker);
 
         return result;

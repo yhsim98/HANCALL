@@ -2,6 +2,7 @@ package controller;
 
 import annotation.Auth;
 import domain.Comment;
+import domain.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class CommentController {
     public ResponseEntity createComment(@RequestBody Comment comment,
                                         @PathVariable("boardId") Long boardId){
         commentService.createComment(comment, boardId);
-        return new ResponseEntity(HttpStatus.CREATED);
+        return new ResponseEntity("created", HttpStatus.CREATED);
     }
 
     //댓글 삭제
@@ -56,7 +57,8 @@ public class CommentController {
     //댓글 조회
     @ResponseBody
     @RequestMapping(value="/{boardId}", method = RequestMethod.GET)
-    public ResponseEntity<Map> getCommentList(@PathVariable("boardId") Long boardId){
-        return new ResponseEntity(commentService.getCommentList(boardId), HttpStatus.OK);
+    public ResponseEntity<Map> getCommentList(@PathVariable("boardId") Long boardId,
+                                              @ModelAttribute Criteria criteria){
+        return new ResponseEntity(commentService.getCommentList(boardId, criteria), HttpStatus.OK);
     }
 }
