@@ -13,13 +13,18 @@
         </selectKey>
     </insert>
 
-    <select id="getBoardList" resultType="domain.Board" parameterType="domain.Criteria">
+    <select id="getBoardList" resultType="domain.Board" parameterType="Long">
         SELECT board_id, starting_point, destination, title, update_date, user.nickname, max_participants
         FROM board
-        LEFT JOIN user ON board.writer_id=user.id
-        WHERE board.deleted=0
+                 LEFT JOIN user ON board.writer_id=user.id
+        <where>
+        board.deleted=0
+        <if test="lastBoardId != null">
+            AND <![CDATA[ board.board_id < #{lastBoardId} ]]>
+        </if>
         ORDER BY board_id DESC
-        LIMIT #{pageStart}, #{perPageNum}
+            LIMIT 10
+        </where>
     </select>
 
     <select id="getBoardById" resultType="domain.Board" parameterType="Long">
@@ -31,8 +36,7 @@
     </select>
 
     <select id="searchBoard" parameterType="Map" resultType="domain.Board">
-        SELECT board_id, starting_point, destination, created_date, update_date, title,
-               content, user.nickname, max_participants
+        SELECT board.*, user.nickname
         FROM board
         LEFT JOIN user ON board.writer_id=user.id
         <where>
@@ -43,9 +47,12 @@
             <if test="starting_Point != null">
                 AND starting_point=#{starting_Point}
             </if>
+            <if test="lastBoardId != null">
+                AND <![CDATA[ board.board_id < #{lastBoardId} ]]>
+            </if>
         </where>
         ORDER BY board_id DESC
-        LIMIT #{pageStart}, #{perPageNum}
+        LIMIT 10
     </select>
 
     <select id="getMaxParticipants" parameterType="Long" resultType="Integer">

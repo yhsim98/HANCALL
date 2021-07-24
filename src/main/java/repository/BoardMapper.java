@@ -12,7 +12,7 @@ import java.util.Map;
 @Repository
 public interface BoardMapper {
     void insertBoard(Board board);
-    List<Board> getBoardList(Criteria criteria);
+    List<Board> getBoardList(Map map);
     Board getBoardById(Long boardId);
     void updateBoard(Board board);
     List<Board> searchBoard(Map map);

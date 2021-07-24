@@ -1,9 +1,12 @@
 package domain;
 
+import javax.validation.constraints.NotBlank;
+
 public class Comment {
     private Long comment_Id;
     private Long board_Id;
     private Long writer_Id;
+    @NotBlank(message = "내용을 입력해주세요")
     private String content;
     private String update_Date;
     private String nickname;

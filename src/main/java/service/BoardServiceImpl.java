@@ -46,7 +46,7 @@ public class BoardServiceImpl implements BoardService{
     @Override
     @Transactional
     public Board createBoard(Board board) throws Exception {
-        String token = getTokenFromServlet();
+        String token = jwtUtil.getTokenFromServlet();
         board.setWriter_Id(jwtUtil.getUserIdFromJWT(token));
 
         if(userService.isDeleted(board.getWriter_Id())){
@@ -60,12 +60,10 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public Map getBoardList(Criteria criteria) {
-        PageMaker pageMaker = new PageMaker(criteria, boardMapper.countBoardNum());
-
+    public Map getBoardList(Long lastBoardId) {
         Map result = new HashMap();
-        result.put("data", boardMapper.getBoardList(criteria));
-        result.put("pageMaker", pageMaker);
+        result.put("lastBoardId", lastBoardId);
+        result.put("data", boardMapper.getBoardList(result));
 
         return result;
     }
@@ -92,7 +90,7 @@ public class BoardServiceImpl implements BoardService{
     public void updateBoard(Board board, Long boardId) throws Exception{
         board.setBoard_Id(boardId);
         Board selectBoard = boardMapper.getBoardById(board.getBoard_Id());
-        String token = getTokenFromServlet();
+        String token = jwtUtil.getTokenFromServlet();
 
         if(selectBoard == null){
             throw new EntityNotFoundException(ErrorCode.Board_NOT_FOUND);
@@ -110,7 +108,7 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public Map searchBoard(String startingPoint, String destination, Criteria criteria) throws Exception {
+    public Map searchBoard(String startingPoint, String destination, Long lastBoardId) throws Exception {
 
         if(startingPoint == null && destination == null)
             throw new ConflictException(ErrorCode.INVALID_INPUT_VALUE);
@@ -118,14 +116,10 @@ public class BoardServiceImpl implements BoardService{
         Map map = new HashMap();
         map.put("starting_Point", startingPoint);
         map.put("destination", destination);
-        map.put("pageStart", criteria.getPageStart());
-        map.put("perPageNum", criteria.getPerPageNum());
-
-        PageMaker pageMaker = new PageMaker(criteria, boardMapper.countBoardNum());
+        map.put("lastBoardId", lastBoardId);
 
         Map result = new HashMap();
         result.put("data", boardMapper.searchBoard(map));
-        result.put("pageMaker", pageMaker);
 
         return result;
     }
@@ -134,7 +128,7 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public void deleteBoard(Long boardId) throws Exception{
         Board selectBoard = boardMapper.getBoardById(boardId);
-        String token = getTokenFromServlet();
+        String token = jwtUtil.getTokenFromServlet();
 
         if(selectBoard == null){
             throw new EntityNotFoundException(ErrorCode.Board_NOT_FOUND);
@@ -154,9 +148,4 @@ public class BoardServiceImpl implements BoardService{
         return boardMapper.getMaxParticipants(boardId);
     }
 
-
-    private String getTokenFromServlet(){
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        return request.getHeader("Authorization");
-    }
 }

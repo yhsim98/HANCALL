@@ -49,7 +49,7 @@ public class CommentServiceImpl implements CommentService{
 
     @Override
     public void createComment(Comment comment, Long boardId) {
-        String token = getTokenFromServlet();
+        String token = jwtUtil.getTokenFromServlet();
 
         comment.setWriter_Id(jwtUtil.getUserIdFromJWT(token));
         comment.setBoard_Id(boardId);
@@ -60,7 +60,7 @@ public class CommentServiceImpl implements CommentService{
     @Override
     public void deleteComment(Long commentId) throws Exception {
         Comment selectComment = commentMapper.getCommentById(commentId);
-        String token = getTokenFromServlet();
+        String token = jwtUtil.getTokenFromServlet();
 
         if(selectComment == null){
             throw new EntityNotFoundException(ErrorCode.COMMENT_NOT_FOUND);
@@ -76,7 +76,7 @@ public class CommentServiceImpl implements CommentService{
     @Override
     public void updateComment(Comment comment, Long commentId) throws Exception{
         Comment selectComment = commentMapper.getCommentById(commentId);
-        String token = getTokenFromServlet();
+        String token = jwtUtil.getTokenFromServlet();
 
         if(selectComment == null){
             throw new EntityNotFoundException(ErrorCode.COMMENT_NOT_FOUND);
@@ -93,10 +93,5 @@ public class CommentServiceImpl implements CommentService{
     @Override
     public void deleteAllCommentsInBoard(Long boardId) {
         commentMapper.deleteAllCommentsInBoard(boardId);
-    }
-
-    private String getTokenFromServlet(){
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        return request.getHeader("Authorization");
     }
 }

@@ -1,18 +1,25 @@
 package domain;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 public class Board {
     private Long board_Id;
     private Long writer_Id;
+    @NotBlank(message="출발지점을 입력해주세요")
     private String starting_Point;
+    @NotBlank(message="도착지점을 입력해주세요")
     private String destination;
     private String created_Date;
     private String update_Date;
+    @NotBlank(message="제목을 입력해주세요")
     private String title;
+    @NotBlank(message="내용을 입력해주세요")
     private String content;
     private String nickname;
+    @NotNull
     private int max_Participants;
     private int now_Participants;
-    private Integer view_Count;
 
     public String getUpdate_Date() {
         return update_Date;
@@ -102,11 +109,4 @@ public class Board {
         this.now_Participants = now_Participants;
     }
 
-    public Integer getView_Count() {
-        return view_Count;
-    }
-
-    public void setView_Count(Integer view_Count) {
-        this.view_Count = view_Count;
-    }
 }

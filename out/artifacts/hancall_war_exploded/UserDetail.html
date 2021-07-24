@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>유저 정보</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=26e577f41bb934567564e07fa054d3e4&libraries=services,clusterer,drawing"></script>
+    <script type="text/javascript" >
+        $(function(){
+            userDetail();
+            userDelete();
+            userUpdate();
+        });
+
+        var token = localStorage.getItem("jwt");
+
+        function userUpdate(){
+            $('#btnUpdate').on('click',function(){
+                window.location.href = "UserUpdate.html";
+            });
+        }
+
+        function userDelete(){
+            $('#btnDelete').on('click',function() {
+                $.ajax({
+                    url: 'user/my',
+                    type: 'DELETE',
+                    contentType: 'application/json;charset=utf-8',
+                    headers: {
+                        Authorization: 'Bearer ' + token
+                    },
+                    dataType: 'json',
+                    error: function (xhr) {
+                        alert("상태값 :" + xhr.status + " Http에러메시지 :" + xhr.message);
+                    },
+                    success: function () {
+                        location.href = "boardList_Json.html";
+                    }
+                });
+            });
+        }
+
+        function userDetail(){
+            $.ajax({
+                url:'user/my',
+                type:'GET',
+                contentType:'application/json;charset=utf-8',
+                headers: {
+                    Authorization: 'Bearer ' + token
+                },
+                dataType:'json',
+                error:function(xhr){
+                    alert("상태값 :" + xhr.status + " Http에러메시지 :"+ xhr.message);
+                },
+                success:userDetailResult
+            });
+        }
+
+        function userDetailResult(xhr) {
+            const data = xhr;
+            document.getElementById("email").innerText = data.email;
+            document.getElementById("name").innerText = data.name;
+            document.getElementById("nickname").innerText = data.nickname;
+            document.getElementById("phone").innerText = data.phone;
+        }
+
+    </script>
+</head>
+
+<body>
+<div class="container">
+    <div class="col-xs-12" style="margin:15px auto;">
+        <label style="font-size:20px;"><span class="glyphicon glyphicon-list-alt"></span>유저 상세</label>
+    </div>
+
+    <div class="col-xs-12">
+        <dl class="dl-horizontal">
+            <dt>이메일</dt>
+            <dd id="email"></dd>
+
+            <dt>이름</dt>
+            <dd id="name"></dd>
+
+            <dt>별명</dt>
+            <dd id="nickname"></dd>
+
+            <dt>전화번호</dt>
+            <dd id="phone"></dd>
+        </dl>
+        </form>
+        <input type="button"  class="btn btn-primary" value="회원탈퇴"  id="btnDelete" />
+        <input type="button"  class="btn btn-primary" value="회원정보수정"  id="btnUpdate" />
+    </div>
+
+</div>
+</br>
+<a href="boardList_Json.html">게시판 목록으로 이동</a>
+</body>
+</html>

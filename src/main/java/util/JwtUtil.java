@@ -8,7 +8,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,19 +41,19 @@ public class JwtUtil {
  
     public boolean isValid(String token) throws Exception{
         if ( token == null) {
-            throw new UnauthorizedException("토큰값이 존재하지 않습니다", ErrorCode.INVALID_JWT);
+            throw new UnauthorizedException(ErrorCode.INVALID_JWT);
         }
         else if ( !token.startsWith("Bearer ") ){
-            throw new UnauthorizedException("Bearer 로 시작하지 않습니다", ErrorCode.INVALID_JWT);
+            throw new UnauthorizedException(ErrorCode.INVALID_JWT);
         }
         token = token.substring(7);
         try {
             Claims claims = Jwts.parser().setSigningKey(secret.getBytes()).parseClaimsJws(token).getBody();
         }catch (ExpiredJwtException e1){
-            throw new UnauthorizedException("로그인이 만료되었습니다", ErrorCode.INVALID_JWT);
+            throw new UnauthorizedException(ErrorCode.INVALID_JWT);
         }
         catch(Throwable e2){
-            throw new UnauthorizedException("잘못된 토큰입니다", ErrorCode.INVALID_JWT);
+            throw new UnauthorizedException(ErrorCode.INVALID_JWT);
         }
         return true;
     }
@@ -58,5 +61,10 @@ public class JwtUtil {
     public Long getUserIdFromJWT(String token){
         Claims claims = Jwts.parser().setSigningKey(secret.getBytes()).parseClaimsJws(token.substring(7)).getBody();
         return Long.parseLong(String.valueOf(claims.get("id")));
+    }
+
+    public String getTokenFromServlet(){
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        return request.getHeader("Authorization");
     }
 }

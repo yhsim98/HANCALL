@@ -13,12 +13,21 @@
             boardSelect();
 
             boardSearch();
+
+            boardMore();
         });
 
         var token = localStorage.getItem("jwt");
 
 
-        //게시판 등록 요청
+        //더보기
+        function boardMore(){
+            $('#btnMore').on('click',function(){
+                boardSearch();
+            });
+        }
+
+        //게시판 검색 요청
         function boardSearch(){
             //등록 버튼 클릭
             $('#btnInsert').on('click',function(){
@@ -57,7 +66,7 @@
         //게시판 목록 조회 응답
         function boardSearchResult(xhr) {
             console.log(xhr.data);
-            $("tbody").empty();
+            //$("tbody").empty();
             $.each(xhr.data,function(idx,item){
                 $('<tr>')
                     .append($('<td>').html(item.title))
@@ -133,6 +142,7 @@
         </thead>
         <tbody></tbody>
     </table>
+    <input type="button"  class="btn btn-primary" value="more"  id="btnMore" />
 </div>
 <a href="boardList_Json.html">게시판 목록으로 이동</a>
 </body>

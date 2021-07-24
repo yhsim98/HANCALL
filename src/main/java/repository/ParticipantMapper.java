@@ -14,4 +14,6 @@ public interface ParticipantMapper {
     Participant getParticipant(Participant participant);
     void deleteAllParticipantInBoard(Long boardId);
     int countParticipants(Long boardId);
+    int isDeleted(Participant participant);
+    void restore(Participant participant);
 }

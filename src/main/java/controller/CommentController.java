@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import service.CommentService;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 @Controller
@@ -28,7 +29,7 @@ public class CommentController {
     @Auth
     @ResponseBody
     @RequestMapping(value = "/{boardId}", method = RequestMethod.POST)
-    public ResponseEntity createComment(@RequestBody Comment comment,
+    public ResponseEntity createComment(@Valid @RequestBody Comment comment,
                                         @PathVariable("boardId") Long boardId){
         commentService.createComment(comment, boardId);
         return new ResponseEntity("created", HttpStatus.CREATED);
@@ -47,7 +48,7 @@ public class CommentController {
     @Auth
     @ResponseBody
     @RequestMapping(value="/{commentId}", method = RequestMethod.PATCH)
-    public ResponseEntity updateComment(@RequestBody Comment comment,
+    public ResponseEntity updateComment(@Valid @RequestBody Comment comment,
                                         @PathVariable Long commentId) throws Exception{
 
         commentService.updateComment(comment, commentId);

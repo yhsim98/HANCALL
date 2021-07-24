@@ -41,20 +41,24 @@ public class ParticipantServiceImpl implements ParticipantService{
     @Transactional
     @Override
     public void participate(Long boardId) throws Exception{
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String token = request.getHeader("Authorization");
+        String token = jwtUtil.getTokenFromServlet();
 
         Participant newParticipant = new Participant();
 
         newParticipant.setUser_Id(jwtUtil.getUserIdFromJWT(token));
         newParticipant.setBoard_Id(boardId);
 
-        if(participantMapper.getParticipant(newParticipant) != null){
+        if(participantMapper.getParticipant(newParticipant) != null && participantMapper.isDeleted(newParticipant) == 0){
             throw new ConflictException(ErrorCode.ALREADY_PARTICIPATE);
         }
 
         if(countParticipants(boardId) >= boardMapper.getMaxParticipants(boardId)){
             throw new ConflictException(ErrorCode.ALREADY_FULL);
+        }
+
+        if(participantMapper.getParticipant(newParticipant) != null && participantMapper.isDeleted(newParticipant) == 1) {
+            participantMapper.restore(newParticipant);
+            return;
         }
 
         participantMapper.insertParticipant(newParticipant);
@@ -63,8 +67,7 @@ public class ParticipantServiceImpl implements ParticipantService{
     @Transactional
     @Override
     public void cancel(Long boardId) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String token = request.getHeader("Authorization");
+        String token = jwtUtil.getTokenFromServlet();
 
         Participant participant = new Participant();
 

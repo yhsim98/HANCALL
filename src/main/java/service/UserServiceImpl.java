@@ -8,12 +8,9 @@ import exception.errorcode.ErrorCode;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import repository.UserMapper;
 import util.JwtUtil;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 @Service
@@ -47,7 +44,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getUserById() throws Exception{
-        User selectUser = userMapper.getUserById(jwtUtil.getUserIdFromJWT(getTokenFromServlet()));
+        User selectUser = userMapper.getUserById(jwtUtil.getUserIdFromJWT(jwtUtil.getTokenFromServlet()));
 
         if(selectUser == null){
             throw new EntityNotFoundException(ErrorCode.USER_NOT_FOUND);
@@ -75,11 +72,19 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User updateUser(User user) throws Exception {
-        Long id = jwtUtil.getUserIdFromJWT(getTokenFromServlet());
+        Long id = jwtUtil.getUserIdFromJWT(jwtUtil.getTokenFromServlet());
         User selectUser = userMapper.getUserById(id);
 
         if(selectUser == null){
             throw new EntityNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        if(userMapper.checkEmail(user.getEmail()) == 1 && !selectUser.getEmail().equals(user.getEmail())){
+            throw new ConflictException(ErrorCode.EMAIL_DUPLICATION);
+        }
+
+        if(userMapper.checkNickname(user.getNickname()) == 1 && !selectUser.getNickname().equals(user.getNickname())){
+            throw new ConflictException(ErrorCode.NICKNAME_DUPLICATION);
         }
 
         user.setId(id);
@@ -91,7 +96,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void deleteUser() throws Exception {
-        Long id = jwtUtil.getUserIdFromJWT(getTokenFromServlet());
+        Long id = jwtUtil.getUserIdFromJWT(jwtUtil.getTokenFromServlet());
         User selectUser = userMapper.getUserById(id);
 
         if(selectUser == null){
@@ -99,6 +104,7 @@ public class UserServiceImpl implements UserService{
         }
 
         selectUser.setEmail(Long.toString(id) + "@deleted.user");
+        selectUser.setNickname(Long.toString(id)+"deletedUser");
         userMapper.deleteUser(selectUser);
     }
 
@@ -107,9 +113,4 @@ public class UserServiceImpl implements UserService{
         return userMapper.isDeleted(id) == 0 ? false : true;
     }
 
-
-    private String getTokenFromServlet(){
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        return request.getHeader("Authorization");
-    }
 }

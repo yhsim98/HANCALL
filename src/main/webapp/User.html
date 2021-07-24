@@ -41,13 +41,11 @@
 
         function userRegister(){
             $('#btnInsert2').on('click',function(){
-                var email = $('input:text[name="email"]').val();
-                var password = $('input:text[name="password"]').val();
+                var email = $('input:text[name="email2"]').val();
+                var password = $('input:text[name="password2"]').val();
                 var name = $('input:text[name="name"]').val();
                 var nickname = $('input:text[name="nickname"]').val();
                 var phone = $('input:text[name="phone"]').val();
-                if(email == null || password == null || name == null || nickname == null || phone == null)
-                    alert("전부 기입하여 주십시오");
                 $.ajax({
                     url: "user",
                     type: 'POST',
@@ -59,10 +57,8 @@
                     success: function() {
                         alert("회원가입되었습니다");
                     },
-                    error:function(xhr, code, message) {
-                        console.log(message);
-                        console.log(xhr.code);
-                        alert(" status: "+xhr.status+" er:"+ xhr.message);
+                    error:function(xhr, status, error) {
+                        alert(" status: "+xhr.status+" er:");
                     }
                 });
             });
@@ -71,6 +67,7 @@
     </script>
 </head>
 <body>
+<a href="UserDetail.html">유저정보화면 이동</a>
 <div class="container">
     <form id="form1"  class="form-horizontal">
         <h2>유저 로그인</h2>
@@ -92,12 +89,12 @@
     <form id="form2"  class="form-horizontal">
         <h2>유저 회원가입</h2>
         <div class="form-group">
-            <label>email:</label>
-            <input type="text"  class="form-control"  name="email" >
+            <label>이메일:</label>
+            <input type="text"  class="form-control"  name="email2" >
         </div>
         <div class="form-group">
-            <label>password:</label>
-            <input type="text"  class="form-control"  name="password" >
+            <label>비밀번호:</label>
+            <input type="text"  class="form-control"  name="password2" >
         </div>
         <div class="form-group">
             <label>이름:</label>

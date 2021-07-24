@@ -29,7 +29,6 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<User> register(@Valid @RequestBody User user) throws Exception {
         User created = userService.userRegister(user);
-
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="EUC-KR">
-    <title>유저 관리</title>
+    <title>유저 수정</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
@@ -10,36 +10,12 @@
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script type="text/javascript" >
         $(function(){
-            userLogin();
-
-            userRegister();
-
+            userUpdate();
         });
 
-        function userLogin(){
-            $('#btnInsert').on('click',function(){
-                var email = $('input:text[name="email"]').val();
-                var password = $('input:text[name="password"]').val();
-                $.ajax({
-                    url: "user/login",
-                    type: 'POST',
-                    dataType: 'json',
-                    data: JSON.stringify({ email:email,password: password}),
-                    contentType: 'application/json',
-                    mimeType: 'application/json',
-                    success: function(xhr) {
-                        localStorage.setItem("jwt", xhr.token);
-                        location.href = "boardList_Json.html";
-                    },
-                    error:function(xhr) {
-                        console.log(xhr.message);
-                        alert(" status: "+xhr.status+" er:"+ xhr.message);
-                    }
-                });
-            });
-        }
+        var token = localStorage.getItem("jwt");
 
-        function userRegister(){
+        function userUpdate(){
             $('#btnInsert2').on('click',function(){
                 var email = $('input:text[name="email2"]').val();
                 var password = $('input:text[name="password2"]').val();
@@ -47,15 +23,18 @@
                 var nickname = $('input:text[name="nickname"]').val();
                 var phone = $('input:text[name="phone"]').val();
                 $.ajax({
-                    url: "user",
-                    type: 'POST',
+                    url: "user/my",
+                    type: 'PATCH',
                     dataType: 'json',
                     data: JSON.stringify({ email:email,password: password, name:name, nickname:nickname,
-                            phone:phone}),
+                        phone:phone}),
+                    headers: {
+                        Authorization: 'Bearer ' + token
+                    },
                     contentType: 'application/json',
                     mimeType: 'application/json',
                     success: function() {
-                        alert("회원가입되었습니다");
+                        window.location.href = "UserDetail.html";
                     },
                     error:function(xhr, status, error) {
                         alert(" status: "+xhr.status+" er:");
@@ -68,26 +47,10 @@
 </head>
 <body>
 <a href="UserDetail.html">유저정보화면 이동</a>
-<div class="container">
-    <form id="form1"  class="form-horizontal">
-        <h2>유저 로그인</h2>
-        <div class="form-group">
-            <label>email:</label>
-            <input type="text"  class="form-control"  name="email" >
-        </div>
-        <div class="form-group">
-            <label>password:</label>
-            <input type="text"  class="form-control"  name="password" >
-        </div>
-        <div class="btn-group">
-            <input type="button"  class="btn btn-primary" value="등록"  id="btnInsert" />
-        </div>
-    </form>
-</div>
-<br/>
+
 <div class="container">
     <form id="form2"  class="form-horizontal">
-        <h2>유저 회원가입</h2>
+        <h2>유저 정보수정</h2>
         <div class="form-group">
             <label>이메일:</label>
             <input type="text"  class="form-control"  name="email2" >

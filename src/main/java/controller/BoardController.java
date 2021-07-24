@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import service.BoardService;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 @Controller
@@ -28,15 +29,15 @@ public class BoardController {
     @Auth
     @ResponseBody
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<Board> createBoard(@RequestBody Board board) throws Exception {
+    public ResponseEntity<Board> createBoard(@Valid @RequestBody Board board) throws Exception {
         return new ResponseEntity(boardService.createBoard(board), HttpStatus.CREATED);
     }
 
     //게시물 목록 조회
     @ResponseBody
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<Map> getBoardList(@ModelAttribute Criteria criteria) throws Exception {
-        return new ResponseEntity(boardService.getBoardList(criteria), HttpStatus.OK);
+    public ResponseEntity<Map> getBoardList(@RequestParam(value="lastBoardId", required = false) Long lastBoardId) throws Exception {
+        return new ResponseEntity(boardService.getBoardList(lastBoardId), HttpStatus.OK);
     }
 
     //게시글 검색
@@ -44,9 +45,9 @@ public class BoardController {
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public ResponseEntity<Map> searchBoard(@RequestParam(value="startingPoint", required = false) String startingPoint,
                                            @RequestParam(value="destination", required = false) String destination,
-                                           @ModelAttribute Criteria criteria) throws Exception {
+                                           @RequestParam(value="lastBoardId", required = false) Long lastBoardId) throws Exception {
 
-        return new ResponseEntity(boardService.searchBoard(startingPoint, destination, criteria), HttpStatus.OK);
+        return new ResponseEntity(boardService.searchBoard(startingPoint, destination, lastBoardId), HttpStatus.OK);
     }
 
 
@@ -61,7 +62,7 @@ public class BoardController {
     @Auth
     @ResponseBody
     @RequestMapping(value = "/{boardId}", method = RequestMethod.PATCH)
-    public ResponseEntity updateBoard(@RequestBody Board board,
+    public ResponseEntity updateBoard(@Valid @RequestBody Board board,
                                       @PathVariable Long boardId) throws Exception {
         boardService.updateBoard(board, boardId);
         return new ResponseEntity(HttpStatus.CREATED);

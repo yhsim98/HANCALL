@@ -9,15 +9,21 @@
         FROM participant
             LEFT JOIN user ON participant.user_id=user.id
             LEFT JOIN board ON participant.board_id=board.board_id
-        WHERE participant.board_id=#{boardId}
+        WHERE participant.board_id=#{boardId} AND participant.deleted=0
     </select>
 
     <select id="countParticipants" resultType="Integer" parameterType="Long">
-        SELECT count(*) FROM participant WHERE board_id=#{boardId}
+        SELECT count(*) FROM participant WHERE board_id=#{boardId} AND deleted=0
     </select>
 
     <select id="getParticipant" parameterType="domain.Participant" resultType="domain.Participant">
         SELECT *
+        FROM participant
+        WHERE board_id=#{board_Id} AND user_id=#{user_Id}
+    </select>
+
+    <select id="isDeleted" parameterType="domain.Participant" resultType="Integer">
+        SELECT participant.deleted
         FROM participant
         WHERE board_id=#{board_Id} AND user_id=#{user_Id}
     </select>
@@ -27,10 +33,23 @@
     </insert>
 
     <delete id="deleteParticipant" parameterType="domain.Participant">
-        DELETE FROM participant WHERE board_id=#{board_Id} AND user_id=#{user_Id}
+        UPDATE participant
+        SET
+            deleted=1
+        WHERE board_id=#{board_Id} AND user_id=#{user_Id}
     </delete>
 
     <delete id="deleteAllParticipantInBoard" parameterType="Long">
-        DELETE FROM participant WHERE board_id=#{boardId}
+        UPDATE participant
+        SET
+            deleted=1
+        WHERE board_id=#{board_Id}
     </delete>
+
+    <update id="restore" parameterType="domain.Participant">
+        UPDATE participant
+        SET
+            deleted=0
+        WHERE board_id=#{board_Id} AND user_id=#{user_Id}
+    </update>
 </mapper>

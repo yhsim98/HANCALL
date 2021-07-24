@@ -36,6 +36,8 @@
     <update id="updateUser" parameterType="domain.User">
         UPDATE user
         SET
+            email=#{email},
+            nickname=#{nickname},
             password=#{password},
             phone=#{phone}
         WHERE id=#{id}
@@ -44,7 +46,8 @@
     <update id="deleteUser" parameterType="domain.User">
         UPDATE user
         SET
-            email=#{email}
+            email=#{email},
+            nickname=#{nickname},
             deleted=1
         WHERE id=#{id}
     </update>
